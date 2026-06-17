@@ -1,0 +1,38 @@
+{
+  "uploadedAt": "2026-06-10T12:30:21.719Z",
+  "platform": "trae",
+  "source": "Trae IDE workspaceStorage/1780898503472",
+  "tags": [
+    "trae",
+    "chat",
+    "session",
+    "agent"
+  ],
+  "content": {
+    "chatHistoryNeedToBeMigrated": [],
+    "icube_session_agent_map": {
+      "6a265ac9901ea18dc30c3bdb": "dev_agent"
+    },
+    "currentAgentData": {
+      "agent_id": "dev_agent",
+      "user_id": "7640360963481224200",
+      "name": "Agent",
+      "unique_name": "dev_agent"
+    },
+    "inputHistoryQuery": {
+      "inputText": "",
+      "parsedQuery": [],
+      "images": [],
+      "multiMedia": []
+    },
+    "agentStorage": {
+      "list": [
+        {
+          "isCurrent": true,
+          "sessionId": "6a265ac9901ea18dc30c3bdb"
+        }
+      ]
+    }
+  },
+  "metadata": {}
+}

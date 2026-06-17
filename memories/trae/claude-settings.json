@@ -1,0 +1,8 @@
+{
+  "uploadedAt": "2026-06-08T04:29:06.374Z",
+  "platform": "trae",
+  "source": "api",
+  "tags": [],
+  "content": "{\n  \"env\": {\n    \"ANTHROPIC_BASE_URL\": \"http://localhost:3000\",\n    \"ANTHROPIC_AUTH_TOKEN\": \"gc_L93tbmg2Kzd6M9sIvMxpL-EolDBstc--\",\n    \"API_TIMEOUT_MS\": \"3000000\",\n    \"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC\": \"1\",\n    \"ANTHROPIC_MODEL\": \"minimax-m2.7\",\n    \"ANTHROPIC_DEFAULT_OPUS_MODEL\": \"minimax-m2.7\",\n    \"ANTHROPIC_DEFAULT_SONNET_MODEL\": \"minimax-m2.7\",\n    \"ANTHROPIC_DEFAULT_HAIKU_MODEL\": \"minimax-m2.7\",\n    \"CLAUDE_CODE_SUBAGENT_MODEL\": \"minimax-m2.7\"\n  },\n  \"permissions\": {\n    \"allow\": [\n      \"Bash\",\n      \"Read\",\n      \"Write\",\n      \"Edit\",\n      \"Agent\",\n      \"Workflow\",\n      \"Task\"\n    ],\n    \"defaultMode\": \"auto\"\n  },\n  \"model\": \"MiniMax-M2.7\",\n  \"autoMemoryEnabled\": true,\n  \"autoMemoryDirectory\": \"~/.claude/memory/projects\",\n  \"autoDreamEnabled\": true,\n  \"theme\": \"dark\"\n}\n",
+  "metadata": {}
+}
