@@ -1,84 +1,78 @@
+# 🧠 永久记忆系统 · AI 技能文件
+
+> 把这个文件放在 `~/.codex/AGENTS.md` 或 `~/项目目录/AGENTS.md`
+> AI 每次启动时自动读取，就像拥有了永久记忆
+
 ---
-name: cloud-memory
-description: 操作钟笑咪的云端数字记忆中枢。用于上传对话总结到云端记忆库，或从云端拉取历史记忆文件。支持查询各平台(cline/codex/trae/claude)的记忆同步状态。
-metadata:
-  short-description: 上传/拉取云端数字记忆
+
+## 启动时自举流程（AI 每次对话开头执行）
+
+### 第一步：检查本地是否有记忆仓库
+
+```bash
+if [ -d ~/Documents/我的记忆 ]; then
+    echo "✅ 本地记忆仓库存在"
+    ls ~/Documents/我的记忆/对话记录/ | tail -5
+else
+    echo "❌ 本地无记忆仓库，请先 git clone"
+fi
+```
+
+### 第二步：读取我的背景
+
+- 读取 `~/Documents/我的记忆/我是谁.md`（如果有）
+- 读取 `~/Documents/我的记忆/README.md`
+
+### 第三步：读取最近 3 条记忆
+
+```bash
+ls -t ~/Documents/我的记忆/对话记录/ | head -3
+```
+
 ---
 
-# 云端记忆操作
-
-钟笑咪 (Ashley) 的云端数字记忆中枢。跨平台 (Trae/Codex/Claude) 共享记忆。
-
-## 服务器信息
-
-```
-API Base:  http://112.124.3.17:3321
-Dashboard: http://112.124.3.17:8765
-API Key:   cline-memory-2026-key
-```
-
-## 操作指令
-
-### 拉取记忆 (启动时必做)
+## 任务完成后保存记忆（AI 自动执行）
 
 ```bash
-# 查看概况
-curl -s http://112.124.3.17:3321/api/memory/stats
+cd ~/Documents/我的记忆
 
-# 列出某平台文件
-curl -s http://112.124.3.17:3321/api/memory/codex
-curl -s http://112.124.3.17:3321/api/memory/trae
-curl -s http://112.124.3.17:3321/api/memory/claude
+cat > "对话记录/$(date +%Y-%m-%d)-摘要.md" << 'EOF'
+# 对话记录 - 日期
 
-# 获取当天 codex 对话
-curl -s http://112.124.3.17:3321/api/memory/codex/conversation-$(date +%Y-%m-%d).md
+## 做了什么
+（总结）
+
+## 解决了什么
+（关键点）
+
+## 状态
+- [ ] 待继续
+
+## 学到什么
+（知识点）
+EOF
+
+git add .
+git commit -m "添加 $(date +%Y-%m-%d) 对话记录"
+git push
 ```
 
-### 上传记忆 (任务完成后必做)
+---
 
-使用 Python 脚本 (避免 shell 转义问题):
+## 跨平台规则
 
-```python
-import json, urllib.request
-from datetime import datetime
+| 平台 | 如何读取 |
+|------|---------|
+| Codex | 自动读取本 SKILL.md + 读本地仓库文件 |
+| Claude | 先执行 git pull，再读 .md 文件 |
+| Trae | 同上 |
+| 新电脑 | `git clone https://github.com/用户名/my-memory.git ~/Documents/我的记忆` |
 
-summary = """# 对话摘要
-在此写入 markdown 格式的对话总结 (做了什么、解决了什么、状态)
-"""
+---
 
-filename = f"conversation-{datetime.now().strftime('%Y-%m-%d')}.md"
+## 核心原则
 
-# 追加而非覆盖
-try:
-    existing = urllib.request.urlopen(f"http://112.124.3.17:3321/api/memory/codex/{filename}").read().decode()
-    content = existing + "\n\n---\n\n" + summary
-except:
-    content = f"# Codex 对话 {datetime.now().strftime('%Y-%m-%d')}\n\n" + summary
-
-data = json.dumps({"platform": "codex", "filename": filename, "content": content}).encode()
-req = urllib.request.Request("http://112.124.3.17:3321/api/memory/upload", data=data,
-    headers={"x-api-key": "cline-memory-2026-key", "Content-Type": "application/json"}, method="POST")
-print(urllib.request.urlopen(req).read().decode())
-```
-
-### 获取单个文件
-
-```bash
-curl -s http://112.124.3.17:3321/api/memory/cline/SKILL.md | python3 -c "import sys,json; print(json.load(sys.stdin)['content'][:3000])"
-```
-
-### 删除文件
-
-```bash
-curl -X DELETE http://112.124.3.17:3321/api/memory/codex/old.md \
-  -H "x-api-key: cline-memory-2026-key"
-```
-
-## 各平台同步状态 (2026-06-11)
-
-| 平台 | 文件数 | 大小 | 状态 |
-|------|--------|------|------|
-| trae | 10 | 430KB | ✅ |
-| claude | 47 | 1.75MB | ✅ |
-| codex | 10 | 19KB | ✅ |
-| cline | 1 (SKILL.md) | 3.7KB | ✅ |
+1. **不依赖任何服务器** — 只用 GitHub 私有仓库
+2. **每次对话自动保存** — 不用手动操作
+3. **每次启动自动读取** — 无缝衔接
+4. **跨平台共享** — Codex/Claude/Trae 都能用
