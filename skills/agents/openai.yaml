@@ -1,0 +1,5 @@
+interface:
+  display_name: "Codex Router"
+  short_description: "CC Switch 路由诊断修复"
+  icon_small: "🔀"
+  icon_large: "🔀"

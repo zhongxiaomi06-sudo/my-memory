@@ -1,0 +1,5 @@
+interface:
+  display_name: "Cloud Memory"
+  short_description: "上传/拉取云端数字记忆"
+  icon_small: "💾"
+  icon_large: "💾"

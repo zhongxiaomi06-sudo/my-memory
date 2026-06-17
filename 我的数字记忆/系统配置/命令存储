@@ -1,0 +1,62 @@
+---
+
+## 📌 Codex 如何使用云端记忆功能
+
+### ✅ 1. Codex 读取云端记忆（自动触发）
+- **无需手动操作** —— Codex 启动时会自动执行这些步骤：
+  1. 读取 `~/.codex/instructions.md` 中的自举流程
+  2. 通过 API 拉取云端记忆：
+     ```bash
+     curl -s http://112.124.3.17:3321/api/memory/stats
+     ```
+  3. 加载 `.cline/SKILL.md` 和所有 `.cline/skills/*` 中的知识
+
+> ✅ **你只需正常对话**，Codex 会自动将云端记忆上下文带入对话。
+
+---
+
+### ✅ 2. 上传对话总结到云端（手动触发）
+**执行以下命令**（每次完成重要任务后）：
+```bash
+echo "# 本次总结
+- 修复了 CC Switch 路由问题
+- 配置了 DeepSeek API
+- 完成云端记忆中枢部署" | python3 ~/.codex/skills/cloud-memory/scripts/upload-memory.py codex
+```
+
+#### 🔍 说明：
+- `echo "..."` 替换为你的实际总结（Markdown 格式）
+- 将自动上传到云端，文件名为 `conversation-2026-06-12.md`
+- 支持追加内容（不会覆盖，而是合并）
+
+---
+
+### ✅ 3. 验证是否生效
+```bash
+# 查看 Codex 平台的最新记忆
+curl -s http://112.124.3.17:3321/api/memory/codex
+```
+输出中应包含最新上传的 `conversation-2026-06-12.md`。
+
+---
+
+### 📋 一句话操作指南
+
+> **完成重要任务后，只需执行：**
+> ```bash
+> echo "你的总结内容" | python3 ~/.codex/skills/cloud-memory/scripts/upload-memory.py codex
+> ```
+> 
+> Codex 会自动读取云端记忆，你无需额外操作。
+
+---
+
+### ⚠️ 注意
+- 首次启动 Codex 可能需要 5-10 秒加载记忆
+- 如果上传失败，检查 API 可用性：
+  ```bash
+  curl -s http://112.124.3.17:3321/
+  ```
+- 上传的总结会**永久保存**在云端记忆中枢，所有平台（Trae/Codex/Claude）均可访问
+
+现在 Codex 已经和你的云端记忆中枢完全打通，你只需专注于任务，其他都交给它！
