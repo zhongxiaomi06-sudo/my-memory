@@ -1,34 +1,33 @@
-# 钟笑咪的工作日志
+# Ashley 的成长日志
 
-> AI 接入点：每次对话前读取 about.json 获取最新状态
+> 不依赖 VitePress，纯粹的静态 HTML 博客
+> 构建命令: `node build.js`
 
-## 结构
+## 目录结构
 
 ```
-blog/
-├── index.html          ← 本人看的网页版
-├── about.json          ← AI 读取的状态文件
-├── daily-template.md   ← 日志模板
-└── posts/              ← 每日日志
-    └── YYYY-MM-DD.md
+├── build.js          # 构建脚本（Markdown → HTML）
+├── src/posts/        # 日志源文件（Markdown）
+├── public/           # 静态文件（about.json）
+├── dist/             # 构建产物（直接托管 GitHub Pages）
+├── posts/            # (软链接到 dist/posts/)
+└── new-post.sh       # 快速新建日志模板
 ```
 
-## AI 使用方式
+## AI 如何读取
 
-1. AI 每次对话开始：读取 blog/about.json
-2. AI 根据 current.active 和 plan.short_term 了解当前阶段
-3. 用户每天在 posts/ 下写日志，更新进度
-4. AI 作为顾问，根据进展提供建议
+AI 浏览器访问 `https://200141.xin/about.json` 获取结构化状态，或直接读 GitHub 仓库源文件。
 
-## 更新方式
+## 添加新日志
 
 ```bash
-# 每天写日志
-cp daily-template.md posts/$(date +%Y-%m-%d).md
-# 编辑它
+# 方法1: 手动在 src/posts/ 新建 .md 文件
+echo "..." > src/posts/YYYY-MM-DD-title.md
 
-# 状态变了就更新 about.json
+# 方法2: 用模板
+bash new-post.sh "标题"
 
-# 同步到 GitHub
-git add . && git commit -m "📝 日志" && git push
+# 重新构建 + 推送
+node build.js
+cd dist && git add . && git commit -m "new post" && git push
 ```
