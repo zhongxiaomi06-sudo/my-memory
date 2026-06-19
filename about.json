@@ -1,0 +1,48 @@
+{
+  "name": "钟笑咪",
+  "alias": ["Mia", "Ashley"],
+  "updated": "2026-06-19",
+  "profile": {
+    "identity": "AI 应用开发者 · 校园创业者 · 黑客松组织者 · 创作者",
+    "school": "宁波大学 · 阳明学院",
+    "major": "金融工程 (已转专业)",
+    "year": "大一结束，即将大二",
+    "graduate": "2028 (提前一年毕业)",
+    "email": "zhongxiaomi06@gmail.com",
+    "github": "zhongxiaomi06-sudo",
+    "location": "浙江 · 宁波",
+    "profile_file": "/Users/ashley/我的数字记忆/我是_钟笑咪.md",
+    "memory_repo": "~/Documents/我的过去/"
+  },
+  "current": {
+    "phase": "暑假北京实习准备",
+    "active": [
+      "暑假北京实习 (即将出发)",
+      "提前一年毕业 (大二修完学分)",
+      "大三冲刺字节跳动实习",
+      "大学毕业创业",
+      "远期: 援助非洲"
+    ],
+    "skills_focus": [
+      "量化金融",
+      "数据分析",
+      "Python/FastAPI",
+      "AI 应用开发",
+      "创业筹备"
+    ]
+  },
+  "plan": {
+    "short_term": "北京实习面试准备 + 技术栈补齐",
+    "mid_term": "大二修完全部学分 + 大三字节实习",
+    "long_term": "大学毕业创业 → 援助非洲"
+  },
+  "blog_url": "https://zhongxiaomi06-sudo.github.io/my-memory/blog/",
+  "ai_access": {
+    "instructions": "每次对话开始时，AI 应读取此文件以获取最新状态。如果不确定今天要做什么，检查此文件的 'current.active' 和 'plan.short_term'。",
+    "daily_checklist": [
+      "今天要推进哪个目标？",
+      "有什么需要AI帮助完成的具体任务？",
+      "上次对话留下了什么待办？"
+    ]
+  }
+}
