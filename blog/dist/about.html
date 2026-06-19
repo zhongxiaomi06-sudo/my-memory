@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于我 — Ashley 的成长日志</title>
+<style>
+:root { 
+  --bg: #0d1117; --fg: #e6edf3; --accent: #58a6ff; 
+  --card-bg: #161b22; --border: #30363d; --muted: #8b949e;
+  --done: #3fb950; --todo: #d29922;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); font-family:-apple-system,sans-serif; line-height:1.6; }
+.container { max-width:720px; margin:0 auto; padding:2rem 1rem; }
+header { 
+  border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:2rem;
+  display:flex; justify-content:space-between; align-items:center;
+}
+header h1 { font-size:1.5rem; }
+header h1 a { color:var(--fg); text-decoration:none; }
+nav a { color:var(--accent); margin-left:1rem; text-decoration:none; }
+nav a:hover { text-decoration:underline; }
+.hero { text-align:center; padding:3rem 0; }
+.hero h1 { font-size:2.5rem; margin-bottom:0.5rem; }
+.hero .tagline { color:var(--muted); font-size:1.1rem; margin-bottom:2rem; }
+.features { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:2rem 0; }
+.feature { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:1.5rem; }
+.feature h3 { margin-bottom:0.5rem; }
+.feature p { color:var(--muted); font-size:0.95rem; }
+.post-item { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1rem; }
+.post-date { color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem; }
+.post-item h3 { font-size:1.1rem; }
+.post-item a { color:var(--accent); text-decoration:none; }
+.post-item a:hover { text-decoration:underline; }
+.tags { margin-top:0.5rem; }
+.tags code { background:var(--bg); padding:2px 8px; border-radius:12px; font-size:0.8rem; color:var(--muted); margin-right:4px; }
+article { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:2rem; }
+article h1, article h2, article h3 { margin:1rem 0 0.5rem; }
+article h1 { font-size:1.8rem; }
+article h2 { font-size:1.3rem; padding-bottom:0.3rem; border-bottom:1px solid var(--border); }
+article p { margin:0.5rem 0; }
+article li { margin-left:1.5rem; margin-bottom:0.3rem; }
+article li.done { text-decoration:line-through; color:var(--done); }
+article li.todo { color:var(--todo); }
+article blockquote { border-left:3px solid var(--accent); padding-left:1rem; color:var(--muted); margin:1rem 0; }
+article hr { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+article a { color:var(--accent); }
+article code { background:var(--bg); padding:2px 6px; border-radius:4px; font-size:0.9em; }
+footer {text-align:center;padding:2rem 0;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem;}
+.status-card { background:var(--card-bg); border:1px solid var(--accent); border-radius:8px; padding:1.5rem; margin:1.5rem 0; }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th, td { border:1px solid var(--border); padding:0.5rem; text-align:left; }
+th { background:var(--card-bg); }
+@media(max-width:600px) { .features{grid-template-columns:1fr;} header{flex-direction:column;} nav{margin-top:0.5rem;} }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1><a href="/">Ashley 的成长日志</a></h1>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/posts.html">日志</a>
+    <a href="/about.html">关于</a>
+  </nav>
+</header>
+
+<article>
+<h1>关于我</h1>
+
+<h2>钟笑咪（Ashley）</h2>
+<ul>
+  <li><strong>身份</strong>：大一学生 / AI 产品开发者</li>
+  <li><strong>位置</strong>：浙江宁波 → 北京实习</li>
+  <li><strong>邮箱</strong>：zhongxiaomi06@gmail.com</li>
+  <li><strong>GitHub</strong>：<a href="https://github.com/zhongxiaomi06-sudo">@zhongxiaomi06-sudo</a></li>
+</ul>
+
+<h2>当前专注</h2>
+<ul>
+<li>字节跳动 / 量化实习冲刺</li>
+<li>猎头 AI 简历解析系统 v7</li>
+<li>创业预备</li>
+</ul>
+
+<h2>技能</h2>
+<p><strong>languages</strong>: Python, JavaScript, HTML/CSS</p>
+<p><strong>frameworks</strong>: FastAPI, Node.js, VitePress</p>
+<p><strong>ai</strong>: DeepSeek, Agent 管道, RAG, 提示词工程</p>
+<p><strong>cloud</strong>: 阿里云 ECS, GitHub, 飞书 API</p>
+
+<h2>项目</h2>
+<table>
+<tr><th>项目</th><th>角色</th><th>状态</th><th>技术栈</th></tr>
+
+<tr>
+  <td>猎头简历智能解析系统</td>
+  <td>Architect + Developer</td>
+  <td>v7 开发中</td>
+  <td>FastAPI + Agent Pipeline + 飞书 + 向量数据库</td>
+</tr>
+<tr>
+  <td>献书游戏</td>
+  <td>Creator + Developer</td>
+  <td>部署到公网</td>
+  <td>HTML5 + Node.js + MiniMax AI</td>
+</tr>
+<tr>
+  <td>宋知秋</td>
+  <td>Author</td>
+  <td>剧本完成</td>
+  <td>undefined</td>
+</tr>
+</table>
+
+<h2>AI 如何读取我的状态</h2>
+<p>AI 浏览器的地址：<code>https://200141.xin/about.json</code></p>
+<p>或者直接读 <a href="/about.json">about.json</a></p>
+</article>
+
+<footer>
+  <p>钟笑咪 · AI 驱动成长日志 · 2026</p>
+  <p>this.sh is my AI advisor — knows what i'm doing</p>
+</footer>
+</div>
+</body>
+</html>
