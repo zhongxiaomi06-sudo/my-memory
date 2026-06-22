@@ -1,0 +1,25 @@
+# git-crypt 加密规则
+# 匹配的文件在 commit 时自动加密，checkout 时自动解密
+
+# 系统配置敏感文件
+系统配置/simple-proxy.py filter=git-crypt diff=git-crypt
+系统配置/cc-switch-proxy.py filter=git-crypt diff=git-crypt
+系统配置/*.ovpn filter=git-crypt diff=git-crypt
+系统配置/ca.crt filter=git-crypt diff=git-crypt
+系统配置/命令存储 filter=git-crypt diff=git-crypt
+
+# 上传脚本含云端 API key
+scripts/upload-memory.py filter=git-crypt diff=git-crypt
+memories/codex-skills/cloud-memory/scripts/upload-memory.py filter=git-crypt diff=git-crypt
+
+# 环境变量和密钥文件
+*.env filter=git-crypt diff=git-crypt
+*.env.* filter=git-crypt diff=git-crypt
+*.key filter=git-crypt diff=git-crypt
+*.secret filter=git-crypt diff=git-crypt
+*.token filter=git-crypt diff=git-crypt
+
+# 证书
+*.crt filter=git-crypt diff=git-crypt
+*.pem filter=git-crypt diff=git-crypt
+*.p12 filter=git-crypt diff=git-crypt
