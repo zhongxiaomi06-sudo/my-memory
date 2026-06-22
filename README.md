@@ -16,27 +16,32 @@
 
 ```
 ├── README.md                   ← 你在这里
-├── 宋知秋/                     ← 我的创作：剧本、动画分镜、人物设定
-├── 系统配置/                   ← 代理脚本、VPN、CC Switch 配置
-├── memories/                   ← 各平台原始记忆缓存
-│   ├── claude/                 ← Claude 对话（28 个文件）
-│   ├── trae/                   ← Trae 对话（9 个文件）
-│   ├── cline/                  ← 用户画像、偏好、技能文件
-│   ├── codex-skills/           ← Codex 云端记忆技能
-│   ├── codex/                  ← Codex 记忆索引
-│   └── projects/               ← 项目总索引
-├── codex对话/                  ← 82 段 Codex 完整对话，按主题分类
-│   ├── 宋知秋与创作/           ← 剧本、人物设定
-│   ├── 人才库与简历/           ← 猎头系统、简历解析
-│   ├── 云端记忆/               ← 记忆服务设计与迁移
-│   ├── 献书游戏/               ← 东晋卡牌游戏
-│   ├── 文献阅读/               ← 论文与技术笔记
-│   ├── 系统配置与路由/         ← CC Switch、代理
-│   ├── 学习与考试/             ← 数学、编程
-│   ├── 飞书/                   ← Lark 集成
-│   └── 其他/                   ← 杂项
-├── 给朋友的说明-如何像我一样使用AI记忆系统.md
 ├── SKILL.md                    ← AI 技能文件（复制即用）
+├── .gitattributes              ← git-crypt 加密规则
+├── 宋知秋/                     ← 我的创作：剧本、动画分镜、人物设定
+├── 系统配置/                   ← 代理脚本、VPN、CC Switch 配置（已加密）
+├── memories/                   ← 各平台原始记忆缓存
+│   ├── claude/                 ← Claude 对话
+│   ├── claude-native/          ← Claude Code 原生记忆迁移
+│   ├── trae/                   ← Trae 对话
+│   ├── cline/                  ← 用户画像、偏好、技能文件
+│   ├── codex/                  ← Codex 记忆索引
+│   ├── codex-native/           ← Codex 原生记忆迁移
+│   ├── codex-skills/           ← Codex 云端记忆技能（已废弃）
+│   └── projects/               ← 项目总索引
+├── codex对话/                  ← Codex 完整对话，按主题分类
+│   ├── 宋知秋与创作/
+│   ├── 人才库与简历/
+│   ├── 云端记忆/               ← 旧云端中枢相关（已归档）
+│   ├── 献书游戏/
+│   ├── 文献阅读/
+│   ├── 系统配置与路由/
+│   ├── 学习与考试/
+│   ├── 飞书/
+│   └── 其他/
+├── scripts/
+│   └── upload-memory.py        ← 对话总结自动提交脚本
+├── 给朋友的说明-如何像我一样使用AI记忆系统.md
 └── .gitignore
 ```
 
@@ -68,7 +73,7 @@
 ### 在新电脑上
 
 ```bash
-git clone https://github.com/zhongxiaomi06-sudo/my-memory.git
+git clone https://github.com/zhongxiaomi06-sudo/my-memory.git ~/Documents/我的过去
 # 发给 AI：请读取我的记忆仓库
 ```
 
@@ -77,7 +82,8 @@ git clone https://github.com/zhongxiaomi06-sudo/my-memory.git
 ```bash
 # AI 自动保存总结
 cd ~/Documents/我的过去
-echo "总结内容" > "对话记录/日期-主题.md"
+echo "总结内容" | python3 scripts/upload-memory.py codex 主题
+# 或手动：
 git add . && git commit -m "update" && git push
 ```
 
@@ -87,6 +93,32 @@ git add . && git commit -m "update" && git push
 cd ~/Documents && rm -rf 我的过去
 # 下次从头 git clone
 ```
+
+---
+
+## 安全与加密
+
+- 这个仓库是 **私有的**，只有我自己能看到
+- `系统配置/` 下的敏感文件已用 **git-crypt** 加密：
+  - VPN 配置文件（`*.ovpn`）
+  - CA 证书（`ca.crt`）
+  - 代理脚本（`simple-proxy.py`, `cc-switch-proxy.py`）
+  - 命令存储文件
+- 所有 API key 已改为从环境变量读取，不再硬编码
+- 旧云端记忆中枢 `112.124.3.17:3321` 已废弃
+
+解密方法（换电脑时）：
+
+```bash
+cd ~/Documents/我的过去
+git-crypt unlock ~/path/to/my-memory-gitcrypt-key
+```
+
+---
+
+## 项目索引
+
+本地所有 Git 仓库见 `~/projects-index.json`，可通过 `repo list` / `repo cd <name>` 快速导航。
 
 ---
 
@@ -101,9 +133,9 @@ cd ~/Documents && rm -rf 我的过去
 ## 重要
 
 - 这个仓库是 **私有的**，只有我自己能看到
-- 所有 API 密钥和敏感信息已脱敏
+- 敏感文件已加密，密钥单独保管
 - **GitHub 在，记忆就在**
 
 ---
 
-最后一次更新: 2026-06-17
+最后一次更新: 2026-06-22

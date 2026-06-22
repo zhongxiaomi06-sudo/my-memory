@@ -2,3 +2,25 @@
 *.log
 *.tmp
 .DS_Store
+
+# 忽略本地 IDE/工具缓存
+.vitepress/cache/
+.node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 忽略敏感文件（git-crypt 会处理已跟踪的，这里防止新增明文文件被误提交）
+*.env
+*.env.*
+*.key
+*.secret
+*.token
+*.ovpn
+*.crt
+*.pem
+*.p12
+
+# 忽略本地会话/缓存
+*.session
+*.cache
