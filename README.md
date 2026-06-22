@@ -20,6 +20,7 @@
 ├── .gitattributes              ← git-crypt 加密规则
 ├── 宋知秋/                     ← 我的创作：剧本、动画分镜、人物设定
 ├── 系统配置/                   ← 代理脚本、VPN、CC Switch 配置（已加密）
+├── ai-workflow/                ← ai-workflow 运行记录（由 ai-workflow-memorize 同步）
 ├── memories/                   ← 各平台原始记忆缓存
 │   ├── claude/                 ← Claude 对话
 │   ├── claude-native/          ← Claude Code 原生记忆迁移
@@ -40,7 +41,8 @@
 │   ├── 飞书/
 │   └── 其他/
 ├── scripts/
-│   └── upload-memory.py        ← 对话总结自动提交脚本
+│   ├── upload-memory.py        ← 对话总结自动提交脚本
+│   └── ai-workflow-memorize.sh ← ai-workflow 运行记录同步脚本（引用 ~/bin/ai-workflow-memorize）
 ├── 给朋友的说明-如何像我一样使用AI记忆系统.md
 └── .gitignore
 ```
@@ -86,6 +88,18 @@ echo "总结内容" | python3 scripts/upload-memory.py codex 主题
 # 或手动：
 git add . && git commit -m "update" && git push
 ```
+
+### ai-workflow 运行结束后
+
+```bash
+# 同步最近一次 ai-workflow 运行记录（meta + 日志摘要）到本仓库
+ai-workflow-memorize
+
+# 首次迁移所有历史
+ai-workflow-memorize --all
+```
+
+运行记录会保存在 `ai-workflow/<project>/<workflow_id>/` 下，与 `codex对话/` 并列成为永久记忆的一部分。
 
 ### 离开电脑时
 
