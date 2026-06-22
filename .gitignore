@@ -24,3 +24,6 @@ __pycache__/
 # 忽略本地会话/缓存
 *.session
 *.cache
+
+# 忽略 shell 重定向意外生成的空文件
+amp
