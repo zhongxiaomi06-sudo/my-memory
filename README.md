@@ -43,6 +43,7 @@
 ├── scripts/
 │   ├── upload-memory.py        ← 对话总结自动提交脚本
 │   └── ai-workflow-memorize.sh ← ai-workflow 运行记录同步脚本（引用 ~/bin/ai-workflow-memorize）
+├── AI工作流操作手册（新手版）.md  ← ai-workflow 完整操作教程
 ├── 给朋友的说明-如何像我一样使用AI记忆系统.md
 └── .gitignore
 ```
