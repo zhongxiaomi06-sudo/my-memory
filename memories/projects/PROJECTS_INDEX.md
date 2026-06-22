@@ -38,6 +38,16 @@
 - **服务器**: 47.101.204.120
 - **记忆文件**: [claude/大对话会话.md](/Users/ashley/.codex/memory/claude/claude-2026-06-10T12-33-25-409Z.md)
 
+### 6. TalentMatch（猎头智能匹配系统）
+- **路径**: `/Users/ashley/Documents/简历/work信息/talentmatch/`（本地）/ `/opt/recruit-bot-v5/`（服务器）
+- **类型**: AI 简历解析 + 候选人匹配系统
+- **技术栈**: FastAPI + React + XGBoost + SQLite/RDS
+- **服务器**: 47.110.93.137 / `yorkteam.cn`
+- **当前状态**: 生产就绪（yorkteam.cn），v7.0 审计 1250/1250 PASS
+- **AI 工作流**: Claude Code + OpenCode + oh-my-openagent + Kimi Code Plan 组合
+- **待推进**: 打标前端 UI、PDF 全文解析、飞书 Bot 上线、HTTPS 证书
+- **记忆文件**: [memories/projects/talentmatch-ai-workflow.md](/Users/ashley/Documents/我的过去/memories/projects/talentmatch-ai-workflow.md)
+
 ---
 
 ## 服务器清单
