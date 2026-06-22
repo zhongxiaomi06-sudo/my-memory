@@ -1,0 +1,20 @@
+{
+  "workflow_id": "talentmatch-20260622-183914-audit",
+  "project": "talentmatch",
+  "display_name": "TalentMatch",
+  "task": "audit",
+  "duration_hours": 0.05,
+  "started_at": "2026-06-22T10:39:14Z",
+  "chat_id": "oc_838672c68f577fb378835b9c4c084bb0",
+  "agent": "prometheus",
+  "category": "ultrabrain",
+  "sessions": {
+    "claude": "ai-workflow-talentmatch-20260622-183914-audit-claude",
+    "opencode": "ai-workflow-talentmatch-20260622-183914-audit-opencode",
+    "codex": "ai-workflow-talentmatch-20260622-183914-audit-codex",
+    "monitor": "ai-workflow-talentmatch-20260622-183914-audit-monitor",
+    "timer": "ai-workflow-talentmatch-20260622-183914-audit-timer"
+  },
+  "status": "stopped",
+  "stopped_at": "2026-06-22T10:39:20Z"
+}
