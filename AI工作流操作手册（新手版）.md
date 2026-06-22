@@ -122,20 +122,22 @@ ai-workflow --project talentmatch --task develop --duration 4h
 
 ### 4.2 进入 AI 会话
 
+**注意**：下面命令里的 `YOUR_WORKFLOW_ID` 要替换成真实 ID。真实 ID 通过 `ai-workflow --status` 查看，例如 `talentmatch-20260622-185000-develop`。
+
 **命令**：
 
 ```bash
 # 进入 Claude Code（主执行）
-tmux attach -t ai-workflow-talentmatch-20260622-185000-develop-claude
+tmux attach -t ai-workflow-YOUR_WORKFLOW_ID-claude
 
 # 进入 OpenCode（深度分析）
-tmux attach -t ai-workflow-talentmatch-20260622-185000-develop-opencode
+tmux attach -t ai-workflow-YOUR_WORKFLOW_ID-opencode
 
 # 进入 Codex（文档/飞书辅助）
-tmux attach -t ai-workflow-talentmatch-20260622-185000-develop-codex
+tmux attach -t ai-workflow-YOUR_WORKFLOW_ID-codex
 
 # 进入 Monitor（监控日志）
-tmux attach -t ai-workflow-talentmatch-20260622-185000-develop-monitor
+tmux attach -t ai-workflow-YOUR_WORKFLOW_ID-monitor
 ```
 
 **tmux 基本操作**（必须会）：
@@ -303,7 +305,7 @@ ls ai-workflow/talentmatch/
 
 ```bash
 ai-workflow --status
-ai-workflow --stop --workflow <旧的 workflow_id>
+ai-workflow --stop --workflow YOUR_OLD_WORKFLOW_ID
 ```
 
 ### Q2: Claude 会话显示 🟢 但 attach 进去黑屏
@@ -313,7 +315,7 @@ ai-workflow --stop --workflow <旧的 workflow_id>
 **解决**：按回车；如果还是黑屏，看日志：
 
 ```bash
-ai-workflow-logs.sh <workflow_id> claude
+ai-workflow-logs.sh YOUR_WORKFLOW_ID claude
 ```
 
 ### Q3: Monitor 报健康检查失败
@@ -355,9 +357,9 @@ git push
 | 启动开发工作流 | `ai-workflow --project talentmatch --task develop --duration 4h` |
 | 启动审计工作流 | `ai-workflow --project talentmatch --task audit --duration 2h` |
 | 查看状态 | `ai-workflow --status` |
-| 进入 Claude | `tmux attach -t ai-workflow-<id>-claude` |
-| 查看日志 | `ai-workflow --logs --workflow <id>` |
-| 停止工作流 | `ai-workflow --stop --workflow <id>` |
+| 进入 Claude | `tmux attach -t ai-workflow-YOUR_WORKFLOW_ID-claude` |
+| 查看日志 | `ai-workflow --logs --workflow YOUR_WORKFLOW_ID` |
+| 停止工作流 | `ai-workflow --stop --workflow YOUR_WORKFLOW_ID` |
 | 同步记忆 | `ai-workflow-memorize` |
 | 启动飞书 Bot | `ai-workflow-bot-start.sh` |
 | 飞书命令 | `/ai start talentmatch develop 4h` |
