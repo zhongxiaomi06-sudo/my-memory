@@ -1,9 +1,10 @@
 # AI Workflow 运行记录
 
-自动同步时间: 2026-06-22 18:50:30
+自动同步时间: 2026-06-22 18:52:50
 
 ## 项目
 
+- [mediguide](mediguide/): 5 次运行
 - [talentmatch](talentmatch/): 1 次运行
 
 ## 常用命令

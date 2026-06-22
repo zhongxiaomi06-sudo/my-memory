@@ -1,0 +1,20 @@
+{
+  "workflow_id": "mediguide-20260622-183516-develop",
+  "project": "mediguide",
+  "display_name": "医路通 MediGuide",
+  "task": "develop",
+  "duration_hours": 0.05,
+  "started_at": "2026-06-22T10:35:16Z",
+  "chat_id": "oc_838672c68f577fb378835b9c4c084bb0",
+  "agent": "sisyphus",
+  "category": "deep",
+  "sessions": {
+    "claude": "ai-workflow-mediguide-20260622-183516-develop-claude",
+    "opencode": "ai-workflow-mediguide-20260622-183516-develop-opencode",
+    "codex": "ai-workflow-mediguide-20260622-183516-develop-codex",
+    "monitor": "ai-workflow-mediguide-20260622-183516-develop-monitor",
+    "timer": "ai-workflow-mediguide-20260622-183516-develop-timer"
+  },
+  "status": "stopped",
+  "stopped_at": "2026-06-22T10:35:21Z"
+}
