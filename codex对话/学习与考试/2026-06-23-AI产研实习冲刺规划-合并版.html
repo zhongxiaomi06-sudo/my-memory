@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>暑假北京 TTC 实习 + 比赛驱动的 AI 产研成长规划</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-light: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    header {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      background: linear-gradient(135deg, #0f172a 0%, #312e81 100%);
+      border-bottom: 1px solid var(--surface-light);
+    }
+
+    header h1 {
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      margin: 0 0 0.75rem;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 1.6rem;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--surface-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin: 1.75rem 0 0.75rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--surface-light);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .tag-blue { background: rgba(56,189,248,0.15); color: var(--accent); }
+    .tag-purple { background: rgba(129,140,248,0.15); color: var(--accent-2); }
+    .tag-green { background: rgba(52,211,153,0.15); color: var(--success); }
+    .tag-yellow { background: rgba(251,191,36,0.15); color: var(--warning); }
+    .tag-red { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.85rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--surface-light);
+    }
+
+    th {
+      background: rgba(56,189,248,0.08);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    ul, ol { padding-left: 1.4rem; }
+    li { margin-bottom: 0.45rem; }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist li {
+      padding-left: 1.8rem;
+      position: relative;
+    }
+
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .highlight {
+      background: rgba(56,189,248,0.1);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface-light);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.75rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 3px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem;
+      border-top: 1px solid var(--surface-light);
+      font-size: 0.9rem;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .card { background: #f8fafc; border-color: #e2e8f0; }
+      header { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>暑假北京 TTC 实习 + 比赛驱动的 AI 产研成长规划</h1>
+    <p>把全职实习当作数据来源，把北京当作加速器，把比赛当作作品交付节点。</p>
+    <div style="margin-top:1.5rem;">
+      <span class="tag tag-blue">TTC 实习</span>
+      <span class="tag tag-purple">北京资源</span>
+      <span class="tag tag-green">比赛驱动</span>
+      <span class="tag tag-yellow">作品集</span>
+      <span class="tag tag-red">求职冲刺</span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <section>
+      <h2>🧭 核心原则</h2>
+      <div class="highlight">
+        <strong>暑假只有一件事：用一切可用资源堆出一个能被 AI 公司认可的工程+AI 作品集。</strong>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0;">TTC 工作 = 训练数据</h3>
+          <p>猎头/招聘场景是最天然的 HR AI / 金融人才推荐数据来源。不要只把它当“占用时间的兼职”。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">比赛 = 强制交付</h3>
+          <p>用截止日期逼出完整项目，避免“学了很多但没有作品”的陷阱。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">北京 = 信息加速器</h3>
+          <p>清北/中科院/大厂 hackathon、技术沙龙、开放日，地理优势要用起来。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">晚上/周末 = 主战场</h3>
+          <p>工作日保证基础输入，周末集中输出。每周约 30-35 小时有效学习时间。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>⏰ 每日时间分配（TTC 9-6/10-7 推算）</h2>
+      <table>
+        <tr><th>时段</th><th>时长</th><th>适合做什么</th></tr>
+        <tr><td>早晨 7:00-8:30</td><td>1.5h</td><td>PyTorch/深度学习代码（大脑最清醒）</td></tr>
+        <tr><td>通勤</td><td>0.5h</td><td>听播客/看论文/刷八股（被动输入）</td></tr>
+        <tr><td>午休 12:30-13:00</td><td>0.5h</td><td>浏览比赛最新赛题、GitHub 趋势</td></tr>
+        <tr><td>晚上 20:30-23:00</td><td>2.5h</td><td>比赛开发 / RAG/Agent 项目 / 写博客</td></tr>
+        <tr><td>周末每天</td><td>6-8h</td><td>攻克比赛核心模块、参加 hackathon、集中写代码</td></tr>
+      </table>
+      <p style="color:var(--text-muted);"><strong>周总计约 30-35 小时</strong>，足够完成基础补完 + 1-2 个比赛 + 1 个垂类作品。</p>
+    </section>
+
+    <section>
+      <h2>🏆 比赛策略：少而精，2-3 个足够</h2>
+      <div class="highlight">
+        <strong>建议组合：</strong>1 个高含金量核心赛（60% 精力）+ 1 个快速线上赛练手（20%）+ 1 次北京本地 hackathon（20%）
+      </div>
+
+      <h3>核心推荐比赛（和你的经历最匹配）</h3>
+      <table>
+        <tr><th>比赛</th><th>类型</th><th>为什么适合你</th><th>准备动作</th></tr>
+        <tr><td>天池 - 人才推荐/招聘相关赛题</td><td>数据挖掘/推荐</td><td>在 TTC，有真实业务理解</td><td>关注招聘方向，用脱敏数据参赛</td></tr>
+        <tr><td>DataFountain - 人才流动预测 / 简历解析</td><td>NLP/推荐</td><td>直接延续 TalentMatch</td><td>把现有代码模块化后参赛</td></tr>
+        <tr><td>CCF BDCI</td><td>大数据/AI</td><td>含金量高，决赛常在北京</td><td>选 NLP 或推荐赛道</td></tr>
+        <tr><td>Kaggle - LLM / tabular</td><td>国际平台</td><td>简历加分，练工程能力</td><td>从 Getting Started 开始</td></tr>
+        <tr><td>科大讯飞 AI 开发者大赛</td><td>NLP/CV/多模态</td><td>落地导向，有实习内推</td><td>选 NLP 赛道</td></tr>
+        <tr><td>百度飞桨 AI Studio 大赛</td><td>多领域</td><td>中文资源丰富，适合上手</td><td>选文本分类/信息抽取</td></tr>
+      </table>
+
+      <h3>北京本地/线下机会</h3>
+      <table>
+        <tr><th>活动</th><th>类型</th><th>获取渠道</th><th>价值</th></tr>
+        <tr><td>清华/北大/北航/中科院 hackathon</td><td>24-48h 编程</td><td>学校公众号、MLNLP、Datawhale</td><td>现场组队、认识研究生/博士生</td></tr>
+        <tr><td>极客公园/机器之心/InfoQ 线下活动</td><td>技术沙龙</td><td>官方公众号、活动行</td><td>了解行业趋势、认识从业者</td></tr>
+        <tr><td>大厂开放日（字节/百度/快手/美团）</td><td>企业活动</td><td>官方招聘公众号</td><td>了解业务、获取内推</td></tr>
+        <tr><td>Slush / 创业周末 Beijing</td><td>创业/黑客松</td><td>活动行、Slush 官网</td><td>快速产品化能力</td></tr>
+        <tr><td>阿里云/华为云开发者大会北京站</td><td>大会</td><td>官方公众号</td><td>听 LLM/Agent/云原生专场</td></tr>
+      </table>
+
+      <h3>按垂类方向选择</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0;">金融 AI 方向</h3>
+          <ul>
+            <li>核心：天池/DC 量化/金融 NLP/财报分析赛题</li>
+            <li>辅助：Kaggle 金融 tabular 竞赛</li>
+            <li>优势：TTC 接触大量金融从业者简历和 JD</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">视频/VR 方向</h3>
+          <ul>
+            <li>核心：讯飞/百度的多模态/视频理解赛道</li>
+            <li>辅助：Kaggle 图像/视频竞赛</li>
+            <li>注意：北京有亮风台、Nreal 等 AR/VR 公司活动</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📅 八周执行计划（TTC + 比赛版）</h2>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 1：入职 + Git 工程化 + 锁定第一个比赛</h3>
+          <span class="tag tag-blue">启动</span>
+        </div>
+        <ul>
+          <li>入职 TTC，观察日常工作中能被 AI 替代/增强的环节</li>
+          <li>完成 1 个开源 PR</li>
+          <li>浏览当前可报名的 3-5 个比赛，选定第一个核心比赛</li>
+          <li>加 2-3 个北京 AI/创业社群（Datawhale、MClub、清华 AI 协会等）</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:12.5%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 2：PyTorch 基础 + 比赛 baseline</h3>
+          <span class="tag tag-purple">基础</span>
+        </div>
+        <ul>
+          <li>完成 PyTorch 60min blitz + CIFAR-10 from scratch</li>
+          <li>核心比赛：跑通 baseline，理解数据、评价指标</li>
+          <li>周末：参加一次北京本地技术沙龙或线上比赛 kickoff</li>
+          <li><strong>本周末必须决定：金融 AI or 视频 VR 方向</strong></li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:25%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 3：RAG/Agent + 比赛特征工程</h3>
+          <span class="tag tag-green">LLM 栈</span>
+        </div>
+        <ul>
+          <li>完成 mini-rag-agent 项目</li>
+          <li>核心比赛：完成特征工程 / 初步模型，提交第一次有效结果</li>
+          <li>利用 TTC 场景：收集脱敏招聘文本作为 RAG 实验素材</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:37.5%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 4：LoRA 微调 + 比赛模型迭代</h3>
+          <span class="tag tag-green">LLM 栈</span>
+        </div>
+        <ul>
+          <li>完成一次 LoRA/QLoRA 微调实验</li>
+          <li>核心比赛：模型迭代、交叉验证、ensemble</li>
+          <li>通勤时间听 RL 课程，为机器人项目保留基础</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:50%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 5-6：垂类作品 = 比赛项目化 + 北京 hackathon</h3>
+          <span class="tag tag-yellow">作品</span>
+        </div>
+        <ul>
+          <li>把比赛作品升级为完整垂类项目（README + Demo + 博客）</li>
+          <li>金融方向：财报 RAG + 投研 Agent</li>
+          <li>视频方向：短视频理解/生成 pipeline</li>
+          <li>参加 1 次北京 hackathon（48 小时），锻炼快速组队和临场交付</li>
+          <li>TTC 工作：主动承担一个能用 AI 提效的小任务</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:75%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 7：作品整合 + 系统设计 + 博客</h3>
+          <span class="tag tag-blue">包装</span>
+        </div>
+        <ul>
+          <li>把比赛代码整理成可展示的 GitHub repo</li>
+          <li>写 2 篇技术博客（一篇讲比赛方案，一篇讲 RAG/Agent 实践）</li>
+          <li>学习 AI 应用系统设计：路由、缓存、限流、模型降级、监控</li>
+          <li>开始每天 1-2 道 LeetCode</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:87.5%;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="week-header">
+          <h3 style="margin:0;">Week 8：简历重塑 + 模拟面试 + 投递</h3>
+          <span class="tag tag-red">求职</span>
+        </div>
+        <ul>
+          <li>用 STAR 法则重写经历：TTC 实习、比赛、TalentMatch、机器人项目</li>
+          <li>八股文：Python、PyTorch、Transformer、LLM、RAG、系统设计</li>
+          <li>模拟面试 3-5 场</li>
+          <li>投递 ≥20 家公司，优先北京本地 AI 公司</li>
+        </ul>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%;"></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>💼 TTC 工作的 AI 化利用</h2>
+      <div class="highlight">
+        你每天接触的是<strong>最真实的人力资源数据</strong>。把它变成作品集和面试谈资。
+      </div>
+      <h3>可以主动做的小项目</h3>
+      <ul>
+        <li><strong>JD 智能分类器</strong>：自动识别金融/AI/产品/运营等岗位类别</li>
+        <li><strong>简历关键信息抽取</strong>：从非结构化简历中提取公司、岗位、年限、技能</li>
+        <li><strong>候选人-岗位匹配优化</strong>：把 TalentMatch HybridEngine 适配到 TTC 数据</li>
+        <li><strong>招聘话术生成</strong>：用 LLM 生成针对候选人的个性化邀约话术</li>
+        <li><strong>行业人才地图</strong>：统计某类岗位（如量化研究员）的人才分布</li>
+      </ul>
+      <h3>注意事项</h3>
+      <ul>
+        <li><strong>数据隐私第一</strong>：不要用真实候选人联系方式，脱敏后再分析</li>
+        <li><strong>先请示再落地</strong>：小工具可以自己做，涉及数据汇总先问 mentor</li>
+        <li><strong>记录业务洞察</strong>：每天记 1-2 条“猎头怎么看简历/岗位”的经验</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>📍 北京资源利用清单</h2>
+      <div class="card">
+        <h3 style="margin-top:0;">每周至少参加 1 次线下/线上活动</h3>
+        <ul>
+          <li><strong>Datawhale 北京</strong>：学习小组、组队参赛</li>
+          <li><strong>MClub（机器学习之夜）</strong>：清华系 AI 社群</li>
+          <li><strong>InfoQ / 极客公园 / 机器之心</strong>：技术大会</li>
+          <li><strong>大厂开放日</strong>：字节、百度、快手、美团、滴滴</li>
+          <li><strong>高校黑客松</strong>：清华 AI 挑战赛、北大创新杯、北航冯如杯</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;">通勤/碎片时间利用</h3>
+        <ul>
+          <li>地铁上：听 AI 播客（AI 内幕、晚点 LatePost、出海相对论）</li>
+          <li>午休：刷 LeetCode / 看论文 abstract</li>
+          <li>睡前 20min：读一篇 arXiv 或 Hugging Face blog</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>⚠️ 心态与止损</h2>
+      <table>
+        <tr><th>风险</th><th>应对</th></tr>
+        <tr><td>TTC 工作太累，晚上不想学</td><td>把早晨变成主战场；晚上只做“有意思”的开发</td></tr>
+        <tr><td>比赛没获奖</td><td>不重要，比赛代码和博客就是作品</td></tr>
+        <tr><td>周末想社交/休息</td><td>周六学习，周日完全休息，或反过来</td></tr>
+        <tr><td>方向摇摆</td><td>第 2 周末必须决定金融 or 视频 VR</td></tr>
+        <tr><td>感到孤独/迷茫</td><td>每周参加一次线下活动，找到同行者</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>✅ 两个月后验收清单</h2>
+      <ul class="checklist">
+        <li>TTC 实习期间完成 1 个内部小工具并被使用</li>
+        <li>参加 2-3 个比赛，至少 1 个进入复赛/获得名次</li>
+        <li>北京本地活动参加 ≥6 场</li>
+        <li>GitHub 3+ 整洁项目 repo</li>
+        <li>2+ 技术博客</li>
+        <li>1+ 开源 PR</li>
+        <li>50 道 LeetCode 中等题</li>
+        <li>简历重写，投递 ≥20 家 AI/金融科技/VR 公司</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>🚀 立即行动项（今天开始）</h2>
+      <ol>
+        <li>打开日历，把“每天早晨 7:00-8:30 学习”设成重复提醒</li>
+        <li>报名 1 个当前可参加的核心比赛（建议从天池/DataFountain 开始）</li>
+        <li>关注 Datawhale / MClub / 机器之心公众号，找北京近期活动</li>
+        <li>入职第一周观察 TTC 工作流，找出 1 个能用 AI 提效的环节</li>
+        <li>在 GitHub 新建一个公开仓库，名字就叫 <code>ai-internship-journey</code>，每天 push 进度</li>
+      </ol>
+    </section>
+
+  </div>
+
+  <footer>
+    更新时间：2026-06-23 · 保存于 ~/.claude/memory/projects/ai-internship-summer-beijing-plan.html
+  </footer>
+</body>
+</html>
