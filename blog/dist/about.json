@@ -3,21 +3,28 @@
   "english_name": "Ashley",
   "alias": "Mia",
   "role": "大一学生 / AI 产品开发者",
-  "location": "浙江宁波 → 北京实习",
+  "location": "北京",
   "github": "zhongxiaomi06-sudo",
   "email": "zhongxiaomi06@gmail.com",
   "current_focus": [
     "字节跳动 / 量化实习冲刺",
+    "AI 记忆中枢系统",
     "猎头 AI 简历解析系统 v7",
     "创业预备"
   ],
   "skills": {
     "languages": ["Python", "JavaScript", "HTML/CSS"],
     "frameworks": ["FastAPI", "Node.js", "VitePress"],
-    "ai": ["DeepSeek", "Agent 管道", "RAG", "提示词工程"],
-    "cloud": ["阿里云 ECS", "GitHub", "飞书 API"]
+    "ai": ["DeepSeek", "Agent 管道", "RAG", "向量检索", "提示词工程"],
+    "cloud": ["阿里云 Tablestore", "GitHub Pages", "飞书 API"]
   },
   "projects": [
+    {
+      "name": "AI 记忆中枢",
+      "role": "Architect + Developer",
+      "status": "已上线",
+      "tech": "阿里云 Tablestore + Ollama 向量嵌入 + MCP Server"
+    },
     {
       "name": "猎头简历智能解析系统",
       "role": "Architect + Developer",
@@ -27,16 +34,22 @@
     {
       "name": "献书游戏",
       "role": "Creator + Developer",
-      "status": "部署到公网",
+      "status": "已部署",
       "tech": "HTML5 + Node.js + MiniMax AI"
     },
     {
       "name": "宋知秋",
       "role": "Author",
       "status": "剧本完成",
-      "type": "五幕剧本 + 动画分镜"
+      "type": "五幕剧本 + 动画分镜 + 生命档案"
+    },
+    {
+      "name": "钟笑咪的博客",
+      "role": "Owner",
+      "status": "已部署",
+      "tech": "Node.js 静态构建 + GitHub Pages"
     }
   ],
-  "last_updated": "2026-06-19",
+  "last_updated": "2026-07-10",
   "goal": "持续成长，用 AI 放大能力，做一个能管团队的 builder"
 }

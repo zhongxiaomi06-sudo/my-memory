@@ -95,7 +95,7 @@ const layout = (title, content) => `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${title} — Ashley 的成长日志</title>
+<title>${title} — 钟笑咪</title>
 <style>
 :root { 
   --bg: #0d1117; --fg: #e6edf3; --accent: #58a6ff; 
@@ -150,7 +150,7 @@ th { background:var(--card-bg); }
 <body>
 <div class="container">
 <header>
-  <h1><a href="/">Ashley 的成长日志</a></h1>
+  <h1><a href="/">钟笑咪</a></h1>
   <nav>
     <a href="/">首页</a>
     <a href="/posts.html">日志</a>
@@ -159,7 +159,7 @@ th { background:var(--card-bg); }
 </header>
 ${content}
 <footer>
-  <p>钟笑咪 · AI 驱动成长日志 · 2026</p>
+  <p>钟笑咪 · 2026</p>
   <p>this.sh is my AI advisor — knows what i'm doing</p>
 </footer>
 </div>
@@ -169,35 +169,34 @@ ${content}
 // 生成首页
 const indexContent = `
 <div class="hero">
-  <h1>Ashley 的成长日志</h1>
-  <p class="tagline">AI 驱动 · 每日精进</p>
+  <h1>钟笑咪</h1>
 </div>
 
 <div class="status-card">
-  <h3>📌 当前状态</h3>
-  <p>📍 ${about.location}  |  🎯 ${about.current_focus.join(' / ')}</p>
+  <h3>当前状态</h3>
+  <p>${about.location}  |  ${about.current_focus.join(' / ')}</p>
 </div>
 
 <div class="features">
   <div class="feature">
-    <h3>🧠 AI 顾问模式</h3>
+    <h3>AI 顾问模式</h3>
     <p>每天更新日志，AI 自动读取。它知道你的进展、提醒你的待办。</p>
   </div>
   <div class="feature">
-    <h3>⚡ 项目执行助理</h3>
+    <h3>项目执行助理</h3>
     <p>想法拆成任务块，分给 AI 执行。这是你以后管团队的方式。</p>
   </div>
   <div class="feature">
-    <h3>🚀 学习加速器</h3>
+    <h3>学习加速器</h3>
     <p>文档扔给 AI，10 分钟掌握别人 2 小时的内容。</p>
   </div>
   <div class="feature">
-    <h3>🎯 面试复盘助手</h3>
+    <h3>面试复盘助手</h3>
     <p>把你做过的项目翻译成面试官能听懂的价值陈述。</p>
   </div>
 </div>
 
-<h2>📝 最近日志</h2>
+<h2>最近日志</h2>
 ${postsHTML}
 <p style="margin-top:1rem"><a href="/posts.html">查看所有日志 →</a></p>
 `;
