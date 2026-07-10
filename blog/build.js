@@ -9,17 +9,29 @@ const postsDir = path.join(__dirname, 'src/posts');
 fs.mkdirSync(postsDir, { recursive: true });
 
 // 移动第一篇日志到 src
-fs.copyFileSync(path.join(__dirname, 'posts/2026-06-19-start.md'), path.join(postsDir, '2026-06-19-start.md'));
+const legacyPost = path.join(__dirname, 'posts/2026-06-19-start.md');
+if (fs.existsSync(legacyPost)) {
+  fs.copyFileSync(legacyPost, path.join(postsDir, '2026-06-19-start.md'));
+}
 
 const postFiles = fs.readdirSync(postsDir).filter(f => f.endsWith('.md')).sort().reverse();
 
-// 简单的 Markdown 解析（处理 # ## - [x] 等）
+// 简单的 Markdown 解析
 function parseMD(text) {
   const lines = text.split('\n');
   let html = '';
   let frontmatter = {};
   let inFM = false;
   let fmDone = false;
+  let inList = false;
+  let inCode = false;
+
+  function closeList() {
+    if (inList) {
+      html += '</ul>\n';
+      inList = false;
+    }
+  }
 
   for (const line of lines) {
     if (!fmDone && line.startsWith('---')) {
@@ -34,251 +46,475 @@ function parseMD(text) {
     }
     if (inFM) {
       const m = line.match(/^(\w+):\s*(.+)/);
-      if (m) frontmatter[m[1]] = m[2].trim();
+      if (m) {
+        let val = m[2].trim();
+        if (val.startsWith('[') && val.endsWith(']')) {
+          try { val = JSON.parse(val); } catch {}
+        }
+        frontmatter[m[1]] = val;
+      }
       continue;
     }
-    
-    // 标题
+
+    if (line.startsWith('```')) {
+      closeList();
+      if (!inCode) {
+        html += '<pre><code>';
+        inCode = true;
+      } else {
+        html += '</code></pre>\n';
+        inCode = false;
+      }
+      continue;
+    }
+    if (inCode) {
+      html += line + '\n';
+      continue;
+    }
+
     if (line.startsWith('### ')) {
+      closeList();
       html += `<h3>${line.slice(4)}</h3>\n`;
     } else if (line.startsWith('## ')) {
+      closeList();
       html += `<h2>${line.slice(3)}</h2>\n`;
     } else if (line.startsWith('# ')) {
+      closeList();
       html += `<h1>${line.slice(2)}</h1>\n`;
     } else if (line.startsWith('- [x] ')) {
+      if (!inList) { html += '<ul>\n'; inList = true; }
       html += `<li class="done">${line.slice(6)}</li>\n`;
     } else if (line.startsWith('- [ ] ')) {
+      if (!inList) { html += '<ul>\n'; inList = true; }
       html += `<li class="todo">${line.slice(6)}</li>\n`;
     } else if (line.startsWith('- ')) {
+      if (!inList) { html += '<ul>\n'; inList = true; }
       html += `<li>${line.slice(2)}</li>\n`;
     } else if (line.startsWith('> ')) {
+      closeList();
       html += `<blockquote>${line.slice(2)}</blockquote>\n`;
-    } else if (line.startsWith('---')) {
-      html += '<hr/>\n';
     } else if (line.trim() === '') {
+      closeList();
       html += '<br/>\n';
-    } else if (line.startsWith('```')) {
-      // 跳过代码块
     } else if (line.match(/^\d+\.\s/)) {
+      if (!inList) { html += '<ol>\n'; inList = true; }
       html += `<li>${line.replace(/^\d+\.\s/, '')}</li>\n`;
     } else if (line.startsWith('|')) {
-      // 跳过表格
       continue;
-    } else if (line.match(/^\[(.+)\]\((.+)\)$/)) {
-      const m = line.match(/^\[(.+)\]\((.+)\)$/);
-      html += `<a href="${m[2]}">${m[1]}</a><br/>\n`;
-    } else if (line.match(/\[(.+)\]\((.+)\)/)) {
-      html += line.replace(/\[(.+)\]\((.+)\)/g, '<a href="$2">$1</a>') + '<br/>\n';
+    } else if (line.match(/\[(.+?)\]\((.+?)\)/)) {
+      closeList();
+      html += line.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>') + '<br/>\n';
     } else {
+      closeList();
       html += `<p>${line}</p>\n`;
     }
   }
+  closeList();
   return { html, frontmatter };
 }
 
-// 生成首页
-let postsHTML = '';
-for (const file of postFiles) {
-  const content = fs.readFileSync(path.join(postsDir, file), 'utf-8');
-  const parsed = parseMD(content);
-  postsHTML += `
-    <article class="post-item">
-      <div class="post-date">${parsed.frontmatter.date || file.replace('.md','').slice(0,10)}</div>
-      <h3><a href="/posts/${file.replace('.md','')}.html">${parsed.frontmatter.title || '无标题'}</a></h3>
-      ${parsed.frontmatter.tags ? `<div class="tags">${parsed.frontmatter.tags.split(',').map(t => `<code>${t.trim()}</code>`).join(' ')}</div>` : ''}
-    </article>`;
-}
-
-// HTML 模板
-const layout = (title, content) => `<!DOCTYPE html>
+// 通用模板
+const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${title} — 钟笑咪</title>
+<title>${title} — ${about.name}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root { 
-  --bg: #0d1117; --fg: #e6edf3; --accent: #58a6ff; 
-  --card-bg: #161b22; --border: #30363d; --muted: #8b949e;
-  --done: #3fb950; --todo: #d29922;
+:root {
+  --bg: #FDFBF7;
+  --fg: #1A1A1A;
+  --accent: #D4AF37;
+  --muted: #4B4B4B;
+  --card: #FFFFFF;
+  --border: #EEEEEE;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--fg); font-family:-apple-system,sans-serif; line-height:1.6; }
-.container { max-width:720px; margin:0 auto; padding:2rem 1rem; }
-header { 
-  border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:2rem;
-  display:flex; justify-content:space-between; align-items:center;
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.7;
 }
-header h1 { font-size:1.5rem; }
-header h1 a { color:var(--fg); text-decoration:none; }
-nav a { color:var(--accent); margin-left:1rem; text-decoration:none; }
-nav a:hover { text-decoration:underline; }
-.hero { text-align:center; padding:3rem 0; }
-.hero h1 { font-size:2.5rem; margin-bottom:0.5rem; }
-.hero .tagline { color:var(--muted); font-size:1.1rem; margin-bottom:2rem; }
-.features { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:2rem 0; }
-.feature { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:1.5rem; }
-.feature h3 { margin-bottom:0.5rem; }
-.feature p { color:var(--muted); font-size:0.95rem; }
-.post-item { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1rem; }
-.post-date { color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem; }
-.post-item h3 { font-size:1.1rem; }
-.post-item a { color:var(--accent); text-decoration:none; }
-.post-item a:hover { text-decoration:underline; }
-.tags { margin-top:0.5rem; }
-.tags code { background:var(--bg); padding:2px 8px; border-radius:12px; font-size:0.8rem; color:var(--muted); margin-right:4px; }
-article { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:2rem; }
-article h1, article h2, article h3 { margin:1rem 0 0.5rem; }
-article h1 { font-size:1.8rem; }
-article h2 { font-size:1.3rem; padding-bottom:0.3rem; border-bottom:1px solid var(--border); }
-article p { margin:0.5rem 0; }
-article li { margin-left:1.5rem; margin-bottom:0.3rem; }
-article li.done { text-decoration:line-through; color:var(--done); }
-article li.todo { color:var(--todo); }
-article blockquote { border-left:3px solid var(--accent); padding-left:1rem; color:var(--muted); margin:1rem 0; }
-article hr { border:none; border-top:1px solid var(--border); margin:1rem 0; }
-article a { color:var(--accent); }
-article code { background:var(--bg); padding:2px 6px; border-radius:4px; font-size:0.9em; }
-footer {text-align:center;padding:2rem 0;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem;}
-.status-card { background:var(--card-bg); border:1px solid var(--accent); border-radius:8px; padding:1.5rem; margin:1.5rem 0; }
-table { width:100%; border-collapse:collapse; margin:1rem 0; }
-th, td { border:1px solid var(--border); padding:0.5rem; text-align:left; }
-th { background:var(--card-bg); }
-@media(max-width:600px) { .features{grid-template-columns:1fr;} header{flex-direction:column;} nav{margin-top:0.5rem;} }
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(253,251,247,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+  z-index: 100;
+}
+nav .nav-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav a.brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 600;
+}
+nav .links a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+nav .links a:hover, nav .links a.active {
+  color: var(--accent);
+}
+header.hero {
+  background: var(--fg);
+  color: var(--bg);
+  padding: 6rem 2rem 5rem;
+  text-align: center;
+}
+header.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  margin: 0;
+}
+header.hero p.tagline {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+  color: var(--accent);
+}
+section {
+  padding: 4rem 2rem;
+  max-width: 1000px;
+  margin: auto;
+}
+.section-title {
+  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+.about p, .services p, .contact p, article p {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.skills ul, .focus ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.skills li, .focus li {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+.project-card, .post-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+.project-card:hover, .post-card:hover {
+  transform: translateY(-5px);
+}
+.project-card h4, .post-card h4 {
+  margin-top: 0;
+  color: var(--accent);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+}
+.project-card .meta, .post-card .meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.post-card a {
+  color: var(--fg);
+  text-decoration: none;
+}
+.post-card a:hover {
+  color: var(--accent);
+}
+a.button {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.9rem 2rem;
+  background: var(--accent);
+  color: var(--fg);
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+a.button:hover {
+  background: #b99c2d;
+}
+article {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 3rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+article h1 { font-size: 2rem; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+article h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); }
+article h3 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem; }
+article ul, article ol { margin-left: 1.5rem; margin-bottom: 1rem; color: var(--muted); }
+article li { margin-bottom: 0.5rem; }
+article li.done { text-decoration: line-through; opacity: 0.6; }
+article li.todo { color: var(--accent); }
+article blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 1.5rem 0;
+  font-style: italic;
+}
+article a { color: var(--accent); }
+article code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+article pre {
+  background: var(--fg);
+  color: var(--bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.tags {
+  margin-top: 0.5rem;
+}
+.tags code {
+  background: var(--bg);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-right: 4px;
+}
+footer {
+  background: var(--fg);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--bg);
+}
+footer a { color: var(--accent); }
+@media(max-width: 600px) {
+  header.hero h1 { font-size: 2.2rem; }
+  nav .links a { margin-left: 1rem; font-size: 0.85rem; }
+  section { padding: 2.5rem 1.5rem; }
+}
 </style>
 </head>
 <body>
-<div class="container">
-<header>
-  <h1><a href="/">钟笑咪</a></h1>
-  <nav>
-    <a href="/">首页</a>
-    <a href="/posts.html">日志</a>
-    <a href="/about.html">关于</a>
-  </nav>
-</header>
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="/">${about.name}</a>
+    <div class="links">
+      <a href="/" class="${activeNav === 'home' ? 'active' : ''}">首页</a>
+      <a href="/posts.html" class="${activeNav === 'posts' ? 'active' : ''}">日志</a>
+      <a href="/about.html" class="${activeNav === 'about' ? 'active' : ''}">关于</a>
+    </div>
+  </div>
+</nav>
 ${content}
 <footer>
-  <p>钟笑咪 · 2026</p>
-  <p>this.sh is my AI advisor — knows what i'm doing</p>
+  <p>${about.name} · ${about.role} · 更新于 ${about.last_updated}</p>
+  <p>GitHub: <a href="https://github.com/${about.github}">@${about.github}</a> · Email: <a href="mailto:${about.email}">${about.email}</a></p>
 </footer>
-</div>
 </body>
 </html>`;
 
+// 所有技能扁平化
+const allSkills = Object.values(about.skills).flat();
+
+// 最近日志
+let postsHTML = '';
+const parsedPosts = postFiles.map(file => {
+  const content = fs.readFileSync(path.join(postsDir, file), 'utf-8');
+  return { file, ...parseMD(content) };
+});
+
+for (const p of parsedPosts.slice(0, 3)) {
+  const date = p.frontmatter.date || p.file.replace('.md', '').slice(0, 10);
+  const tags = p.frontmatter.tags
+    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
+    : [];
+  postsHTML += `
+    <div class="post-card">
+      <div class="meta">${date}</div>
+      <h4><a href="/posts/${p.file.replace('.md', '')}.html">${p.frontmatter.title || '无标题'}</a></h4>
+      ${tags.length ? `<div class="tags">${tags.map(t => `<code>${t}</code>`).join(' ')}</div>` : ''}
+    </div>`;
+}
+
 // 生成首页
 const indexContent = `
-<div class="hero">
-  <h1>钟笑咪</h1>
-</div>
+<header class="hero">
+  <h1>${about.name}</h1>
+  <p class="tagline">${about.role} · ${about.location}</p>
+</header>
 
-<div class="status-card">
-  <h3>当前状态</h3>
-  <p>${about.location}  |  ${about.current_focus.join(' / ')}</p>
-</div>
+<section class="about">
+  <h2 class="section-title">关于</h2>
+  <p>${about.goal}。目前专注于 ${about.current_focus.slice(0, 3).join('、')}。</p>
+  <p>这个站点是我的个人主页与日志中心，记录项目、想法与成长。</p>
+</section>
 
-<div class="features">
-  <div class="feature">
-    <h3>AI 顾问模式</h3>
-    <p>每天更新日志，AI 自动读取。它知道你的进展、提醒你的待办。</p>
-  </div>
-  <div class="feature">
-    <h3>项目执行助理</h3>
-    <p>想法拆成任务块，分给 AI 执行。这是你以后管团队的方式。</p>
-  </div>
-  <div class="feature">
-    <h3>学习加速器</h3>
-    <p>文档扔给 AI，10 分钟掌握别人 2 小时的内容。</p>
-  </div>
-  <div class="feature">
-    <h3>面试复盘助手</h3>
-    <p>把你做过的项目翻译成面试官能听懂的价值陈述。</p>
-  </div>
-</div>
+<section class="focus">
+  <h2 class="section-title">当前专注</h2>
+  <ul>
+    ${about.current_focus.map(f => `<li>${f}</li>`).join('\n    ')}
+  </ul>
+</section>
 
-<h2>最近日志</h2>
-${postsHTML}
-<p style="margin-top:1rem"><a href="/posts.html">查看所有日志 →</a></p>
+<section class="skills">
+  <h2 class="section-title">技能</h2>
+  <ul>
+    ${allSkills.map(s => `<li>${s}</li>`).join('\n    ')}
+  </ul>
+</section>
+
+<section class="portfolio">
+  <h2 class="section-title">项目</h2>
+  <div class="portfolio-grid">
+    ${about.projects.map(p => `
+    <div class="project-card">
+      <h4>${p.name}</h4>
+      <p>${p.tech || p.type || ''}</p>
+      <div class="meta">${p.role} · ${p.status}</div>
+    </div>`).join('')}
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">最近日志</h2>
+  <div class="portfolio-grid">
+    ${postsHTML}
+  </div>
+  <p style="margin-top:2rem"><a class="button" href="/posts.html">查看所有日志</a></p>
+</section>
+
+<section class="contact">
+  <h2 class="section-title">联系</h2>
+  <p>欢迎通过邮件或 GitHub 联系我，讨论项目、技术或合作。</p>
+  <a class="button" href="mailto:${about.email}">发送邮件</a>
+  <a class="button" href="https://github.com/${about.github}" style="margin-left:0.75rem">GitHub</a>
+</section>
 `;
 
-fs.writeFileSync('dist/index.html', layout('首页', indexContent));
+fs.writeFileSync('dist/index.html', layout('首页', indexContent, 'home'));
 
 // 生成日志列表页
-const postsListHTML = postFiles.map(f => {
-  const content = fs.readFileSync(path.join(postsDir, f), 'utf-8');
-  const parsed = parseMD(content);
+const postsListHTML = parsedPosts.map(p => {
+  const date = p.frontmatter.date || p.file.replace('.md', '').slice(0, 10);
+  const tags = p.frontmatter.tags
+    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
+    : [];
   return `
-    <article class="post-item">
-      <div class="post-date">${parsed.frontmatter.date || f.replace('.md','').slice(0,10)}</div>
-      <h3><a href="/posts/${f.replace('.md','')}.html">${parsed.frontmatter.title || '无标题'}</a></h3>
-      ${parsed.frontmatter.tags ? `<div class="tags">${parsed.frontmatter.tags.split(',').map(t => `<code>${t.trim()}</code>`).join(' ')}</div>` : ''}
-    </article>`;
+    <div class="post-card">
+      <div class="meta">${date}</div>
+      <h4><a href="/posts/${p.file.replace('.md', '')}.html">${p.frontmatter.title || '无标题'}</a></h4>
+      ${tags.length ? `<div class="tags">${tags.map(t => `<code>${t}</code>`).join(' ')}</div>` : ''}
+    </div>`;
 }).join('');
 
 const postsListContent = `
-<h1>所有日志</h1>
-${postsListHTML || '<p>暂无日志</p>'}
+<header class="hero">
+  <h1>所有日志</h1>
+  <p class="tagline">记录项目、想法与成长</p>
+</header>
+<section>
+  <div class="portfolio-grid">
+    ${postsListHTML || '<p>暂无日志</p>'}
+  </div>
+</section>
 `;
-fs.writeFileSync('dist/posts.html', layout('所有日志', postsListContent));
+fs.writeFileSync('dist/posts.html', layout('所有日志', postsListContent, 'posts'));
 
 // 生成每篇日志的独立页面
 const postsDistDir = path.join(__dirname, 'dist/posts');
 fs.mkdirSync(postsDistDir, { recursive: true });
 
-for (const file of postFiles) {
-  const content = fs.readFileSync(path.join(postsDir, file), 'utf-8');
-  const parsed = parseMD(content);
+for (const p of parsedPosts) {
+  const date = p.frontmatter.date || '';
+  const tags = p.frontmatter.tags
+    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
+    : [];
   const postContent = `
-<article>
-  <p class="post-date" style="color:var(--muted)">${parsed.frontmatter.date || ''}</p>
-  ${parsed.frontmatter.tags ? `<div class="tags">${parsed.frontmatter.tags.split(',').map(t => `<code>${t.trim()}</code>`).join(' ')}</div>` : ''}
-  <h1>${parsed.frontmatter.title || '无标题'}</h1>
-  ${parsed.html}
-</article>
-<p style="margin-top:2rem"><a href="/posts.html">← 返回日志列表</a></p>
+<header class="hero">
+  <h1>${p.frontmatter.title || '日志'}</h1>
+  <p class="tagline">${date}</p>
+</header>
+<section>
+  <article>
+    ${tags.length ? `<div class="tags">${tags.map(t => `<code>${t}</code>`).join(' ')}</div>` : ''}
+    ${p.html}
+  </article>
+  <p style="margin-top:2rem"><a class="button" href="/posts.html">← 返回日志列表</a></p>
+</section>
 `;
-  fs.writeFileSync(path.join(postsDistDir, `${file.replace('.md','')}.html`), layout(parsed.frontmatter.title || '日志', postContent));
+  fs.writeFileSync(path.join(postsDistDir, `${p.file.replace('.md', '')}.html`), layout(p.frontmatter.title || '日志', postContent, 'posts'));
 }
 
 // 生成关于页面
 const aboutContent = `
-<article>
-<h1>关于我</h1>
+<header class="hero">
+  <h1>关于我</h1>
+  <p class="tagline">${about.role} · ${about.location}</p>
+</header>
+<section>
+  <article>
+    <h2>${about.name}（${about.english_name}）</h2>
+    <p>${about.goal}</p>
 
-<h2>${about.name}（${about.english_name}）</h2>
-<ul>
-  <li><strong>身份</strong>：${about.role}</li>
-  <li><strong>位置</strong>：${about.location}</li>
-  <li><strong>邮箱</strong>：${about.email}</li>
-  <li><strong>GitHub</strong>：<a href="https://github.com/${about.github}">@${about.github}</a></li>
-</ul>
+    <h2>当前专注</h2>
+    <ul>
+      ${about.current_focus.map(f => `<li>${f}</li>`).join('\n      ')}
+    </ul>
 
-<h2>当前专注</h2>
-<ul>
-${about.current_focus.map(f => `<li>${f}</li>`).join('\n')}
-</ul>
+    <h2>技能</h2>
+    ${Object.entries(about.skills).map(([k, v]) => `<p><strong>${k}</strong>：${v.join('、')}</p>`).join('\n    ')}
 
-<h2>技能</h2>
-${Object.entries(about.skills).map(([k,v]) => `<p><strong>${k}</strong>: ${v.join(', ')}</p>`).join('\n')}
+    <h2>项目</h2>
+    <div class="portfolio-grid">
+      ${about.projects.map(p => `
+      <div class="project-card">
+        <h4>${p.name}</h4>
+        <p>${p.tech || p.type || ''}</p>
+        <div class="meta">${p.role} · ${p.status}</div>
+      </div>`).join('')}
+    </div>
 
-<h2>项目</h2>
-<table>
-<tr><th>项目</th><th>角色</th><th>状态</th><th>技术栈</th></tr>
-${about.projects.map(p => `
-<tr>
-  <td>${p.name}</td>
-  <td>${p.role}</td>
-  <td>${p.status}</td>
-  <td>${p.tech}</td>
-</tr>`).join('')}
-</table>
+    <h2>联系</h2>
+    <ul>
+      <li>GitHub：<a href="https://github.com/${about.github}">@${about.github}</a></li>
+      <li>邮箱：<a href="mailto:${about.email}">${about.email}</a></li>
+    </ul>
 
-<h2>AI 如何读取我的状态</h2>
-<p>AI 浏览器的地址：<code>https://200141.xin/about.json</code></p>
-<p>或者直接读 <a href="/about.json">about.json</a></p>
-</article>
+    <h2>AI 可读数据</h2>
+    <p>AI 可以通过 <a href="/about.json">about.json</a> 获取结构化状态。</p>
+  </article>
+</section>
 `;
-fs.writeFileSync('dist/about.html', layout('关于我', aboutContent));
+fs.writeFileSync('dist/about.html', layout('关于我', aboutContent, 'about'));
 
 // 把 public 文件拷过去
 fs.cpSync('public/about.json', 'dist/about.json');
