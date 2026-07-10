@@ -28,6 +28,7 @@ function parseMD(text) {
         continue;
       } else {
         fmDone = true;
+        inFM = false;
         continue;
       }
     }
