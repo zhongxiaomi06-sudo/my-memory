@@ -2,15 +2,16 @@
 
 > 不依赖 VitePress，纯粹的静态 HTML 博客
 > 构建命令: `node build.js`
+> 主题：淡蓝色、简洁、阅读模式优先
 
 ## 目录结构
 
 ```
 ├── build.js          # 构建脚本（Markdown → HTML）
 ├── src/posts/        # 日志源文件（Markdown）
-├── public/           # 静态文件（about.json）
+├── public/           # 静态文件（about.json、style.css）
+├── legacy/           # 旧 VitePress / 独立页面（不再构建）
 ├── dist/             # 构建产物（直接托管 GitHub Pages）
-├── posts/            # (软链接到 dist/posts/)
 └── new-post.sh       # 快速新建日志模板
 ```
 

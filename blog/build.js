@@ -8,12 +8,6 @@ const about = JSON.parse(fs.readFileSync('public/about.json', 'utf-8'));
 const postsDir = path.join(__dirname, 'src/posts');
 fs.mkdirSync(postsDir, { recursive: true });
 
-// 移动第一篇日志到 src
-const legacyPost = path.join(__dirname, 'posts/2026-06-19-start.md');
-if (fs.existsSync(legacyPost)) {
-  fs.copyFileSync(legacyPost, path.join(postsDir, '2026-06-19-start.md'));
-}
-
 const postFiles = fs.readdirSync(postsDir).filter(f => f.endsWith('.md')).sort().reverse();
 
 // 简单的 Markdown 解析
@@ -24,12 +18,23 @@ function parseMD(text) {
   let inFM = false;
   let fmDone = false;
   let inList = false;
+  let listType = null; // 'ul' 或 'ol'
   let inCode = false;
 
   function closeList() {
     if (inList) {
-      html += '</ul>\n';
+      html += `</${listType}>\n`;
       inList = false;
+      listType = null;
+    }
+  }
+
+  function openList(type) {
+    if (inList && listType !== type) closeList();
+    if (!inList) {
+      html += `<${type}>\n`;
+      inList = true;
+      listType = type;
     }
   }
 
@@ -49,7 +54,7 @@ function parseMD(text) {
       if (m) {
         let val = m[2].trim();
         if (val.startsWith('[') && val.endsWith(']')) {
-          try { val = JSON.parse(val); } catch {}
+          val = val.slice(1, -1).split(',').map(s => s.trim()).filter(Boolean);
         }
         frontmatter[m[1]] = val;
       }
@@ -82,13 +87,13 @@ function parseMD(text) {
       closeList();
       html += `<h1>${line.slice(2)}</h1>\n`;
     } else if (line.startsWith('- [x] ')) {
-      if (!inList) { html += '<ul>\n'; inList = true; }
+      openList('ul');
       html += `<li class="done">${line.slice(6)}</li>\n`;
     } else if (line.startsWith('- [ ] ')) {
-      if (!inList) { html += '<ul>\n'; inList = true; }
+      openList('ul');
       html += `<li class="todo">${line.slice(6)}</li>\n`;
     } else if (line.startsWith('- ')) {
-      if (!inList) { html += '<ul>\n'; inList = true; }
+      openList('ul');
       html += `<li>${line.slice(2)}</li>\n`;
     } else if (line.startsWith('> ')) {
       closeList();
@@ -97,7 +102,7 @@ function parseMD(text) {
       closeList();
       html += '<br/>\n';
     } else if (line.match(/^\d+\.\s/)) {
-      if (!inList) { html += '<ol>\n'; inList = true; }
+      openList('ol');
       html += `<li>${line.replace(/^\d+\.\s/, '')}</li>\n`;
     } else if (line.startsWith('|')) {
       continue;
@@ -113,6 +118,13 @@ function parseMD(text) {
   return { html, frontmatter };
 }
 
+// 规范化标签数组
+function normalizeTags(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  return raw.split(',').map(t => t.trim()).filter(Boolean);
+}
+
 // 通用模板
 const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -120,208 +132,7 @@ const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title} — ${about.name}</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #FDFBF7;
-  --fg: #1A1A1A;
-  --accent: #D4AF37;
-  --muted: #4B4B4B;
-  --card: #FFFFFF;
-  --border: #EEEEEE;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  line-height: 1.7;
-}
-nav {
-  position: sticky;
-  top: 0;
-  background: rgba(253,251,247,0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
-  padding: 1rem 2rem;
-  z-index: 100;
-}
-nav .nav-inner {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-nav a.brand {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: var(--fg);
-  text-decoration: none;
-  font-weight: 600;
-}
-nav .links a {
-  color: var(--muted);
-  text-decoration: none;
-  margin-left: 1.5rem;
-  font-size: 0.95rem;
-  transition: color 0.2s;
-}
-nav .links a:hover, nav .links a.active {
-  color: var(--accent);
-}
-header.hero {
-  background: var(--fg);
-  color: var(--bg);
-  padding: 6rem 2rem 5rem;
-  text-align: center;
-}
-header.hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.2rem;
-  margin: 0;
-}
-header.hero p.tagline {
-  font-size: 1.25rem;
-  margin-top: 1rem;
-  color: var(--accent);
-}
-section {
-  padding: 4rem 2rem;
-  max-width: 1000px;
-  margin: auto;
-}
-.section-title {
-  font-size: 2rem;
-  font-family: 'Playfair Display', serif;
-  color: var(--accent);
-  margin-bottom: 1.5rem;
-}
-.about p, .services p, .contact p, article p {
-  line-height: 1.8;
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-.skills ul, .focus ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-.skills li, .focus li {
-  background: var(--accent);
-  color: var(--bg);
-  padding: 0.6rem 1.2rem;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-.portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-.project-card, .post-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-}
-.project-card:hover, .post-card:hover {
-  transform: translateY(-5px);
-}
-.project-card h4, .post-card h4 {
-  margin-top: 0;
-  color: var(--accent);
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-}
-.project-card .meta, .post-card .meta {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 0.5rem;
-}
-.post-card a {
-  color: var(--fg);
-  text-decoration: none;
-}
-.post-card a:hover {
-  color: var(--accent);
-}
-a.button {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.9rem 2rem;
-  background: var(--accent);
-  color: var(--fg);
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-a.button:hover {
-  background: #b99c2d;
-}
-article {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  padding: 3rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-article h1 { font-size: 2rem; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
-article h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); }
-article h3 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem; }
-article ul, article ol { margin-left: 1.5rem; margin-bottom: 1rem; color: var(--muted); }
-article li { margin-bottom: 0.5rem; }
-article li.done { text-decoration: line-through; opacity: 0.6; }
-article li.todo { color: var(--accent); }
-article blockquote {
-  border-left: 3px solid var(--accent);
-  padding-left: 1rem;
-  color: var(--muted);
-  margin: 1.5rem 0;
-  font-style: italic;
-}
-article a { color: var(--accent); }
-article code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-article pre {
-  background: var(--fg);
-  color: var(--bg);
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-.tags {
-  margin-top: 0.5rem;
-}
-.tags code {
-  background: var(--bg);
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-right: 4px;
-}
-footer {
-  background: var(--fg);
-  padding: 2.5rem 2rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--bg);
-}
-footer a { color: var(--accent); }
-@media(max-width: 600px) {
-  header.hero h1 { font-size: 2.2rem; }
-  nav .links a { margin-left: 1rem; font-size: 0.85rem; }
-  section { padding: 2.5rem 1.5rem; }
-}
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <nav>
@@ -354,9 +165,7 @@ const parsedPosts = postFiles.map(file => {
 
 for (const p of parsedPosts.slice(0, 3)) {
   const date = p.frontmatter.date || p.file.replace('.md', '').slice(0, 10);
-  const tags = p.frontmatter.tags
-    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
-    : [];
+  const tags = normalizeTags(p.frontmatter.tags);
   postsHTML += `
     <div class="post-card">
       <div class="meta">${date}</div>
@@ -425,9 +234,7 @@ fs.writeFileSync('dist/index.html', layout('首页', indexContent, 'home'));
 // 生成日志列表页
 const postsListHTML = parsedPosts.map(p => {
   const date = p.frontmatter.date || p.file.replace('.md', '').slice(0, 10);
-  const tags = p.frontmatter.tags
-    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
-    : [];
+  const tags = normalizeTags(p.frontmatter.tags);
   return `
     <div class="post-card">
       <div class="meta">${date}</div>
@@ -453,17 +260,20 @@ fs.writeFileSync('dist/posts.html', layout('所有日志', postsListContent, 'po
 const postsDistDir = path.join(__dirname, 'dist/posts');
 fs.mkdirSync(postsDistDir, { recursive: true });
 
+// 清理旧的日志 HTML，避免重命名/删除后残留
+for (const f of fs.readdirSync(postsDistDir)) {
+  if (f.endsWith('.html')) fs.unlinkSync(path.join(postsDistDir, f));
+}
+
 for (const p of parsedPosts) {
   const date = p.frontmatter.date || '';
-  const tags = p.frontmatter.tags
-    ? (Array.isArray(p.frontmatter.tags) ? p.frontmatter.tags : p.frontmatter.tags.split(',').map(t => t.trim()))
-    : [];
+  const tags = normalizeTags(p.frontmatter.tags);
   const postContent = `
 <header class="hero">
   <h1>${p.frontmatter.title || '日志'}</h1>
   <p class="tagline">${date}</p>
 </header>
-<section>
+<section class="reading">
   <article>
     ${tags.length ? `<div class="tags">${tags.map(t => `<code>${t}</code>`).join(' ')}</div>` : ''}
     ${p.html}
@@ -480,7 +290,7 @@ const aboutContent = `
   <h1>关于我</h1>
   <p class="tagline">${about.role} · ${about.location}</p>
 </header>
-<section>
+<section class="reading">
   <article>
     <h2>${about.name}（${about.english_name}）</h2>
     <p>${about.goal}</p>
@@ -518,10 +328,12 @@ fs.writeFileSync('dist/about.html', layout('关于我', aboutContent, 'about'));
 
 // 把 public 文件拷过去
 fs.cpSync('public/about.json', 'dist/about.json');
+fs.cpSync('public/style.css', 'dist/style.css');
 
 console.log('✅ 博客构建完成！dist/ 目录已生成');
 console.log('   - dist/index.html (首页)');
 console.log('   - dist/posts.html (日志列表)');
 console.log('   - dist/about.html (关于我)');
 console.log('   - dist/about.json (AI 可读数据)');
+console.log('   - dist/style.css (样式表)');
 console.log(`   - dist/posts/ (${postFiles.length} 篇日志)`);

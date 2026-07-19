@@ -4,208 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>博客上线：我的 AI 顾问系统 — 钟笑咪</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #FDFBF7;
-  --fg: #1A1A1A;
-  --accent: #D4AF37;
-  --muted: #4B4B4B;
-  --card: #FFFFFF;
-  --border: #EEEEEE;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  line-height: 1.7;
-}
-nav {
-  position: sticky;
-  top: 0;
-  background: rgba(253,251,247,0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
-  padding: 1rem 2rem;
-  z-index: 100;
-}
-nav .nav-inner {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-nav a.brand {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: var(--fg);
-  text-decoration: none;
-  font-weight: 600;
-}
-nav .links a {
-  color: var(--muted);
-  text-decoration: none;
-  margin-left: 1.5rem;
-  font-size: 0.95rem;
-  transition: color 0.2s;
-}
-nav .links a:hover, nav .links a.active {
-  color: var(--accent);
-}
-header.hero {
-  background: var(--fg);
-  color: var(--bg);
-  padding: 6rem 2rem 5rem;
-  text-align: center;
-}
-header.hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.2rem;
-  margin: 0;
-}
-header.hero p.tagline {
-  font-size: 1.25rem;
-  margin-top: 1rem;
-  color: var(--accent);
-}
-section {
-  padding: 4rem 2rem;
-  max-width: 1000px;
-  margin: auto;
-}
-.section-title {
-  font-size: 2rem;
-  font-family: 'Playfair Display', serif;
-  color: var(--accent);
-  margin-bottom: 1.5rem;
-}
-.about p, .services p, .contact p, article p {
-  line-height: 1.8;
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-.skills ul, .focus ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-.skills li, .focus li {
-  background: var(--accent);
-  color: var(--bg);
-  padding: 0.6rem 1.2rem;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-.portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-.project-card, .post-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-}
-.project-card:hover, .post-card:hover {
-  transform: translateY(-5px);
-}
-.project-card h4, .post-card h4 {
-  margin-top: 0;
-  color: var(--accent);
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-}
-.project-card .meta, .post-card .meta {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 0.5rem;
-}
-.post-card a {
-  color: var(--fg);
-  text-decoration: none;
-}
-.post-card a:hover {
-  color: var(--accent);
-}
-a.button {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.9rem 2rem;
-  background: var(--accent);
-  color: var(--fg);
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-a.button:hover {
-  background: #b99c2d;
-}
-article {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  padding: 3rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-article h1 { font-size: 2rem; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
-article h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); }
-article h3 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem; }
-article ul, article ol { margin-left: 1.5rem; margin-bottom: 1rem; color: var(--muted); }
-article li { margin-bottom: 0.5rem; }
-article li.done { text-decoration: line-through; opacity: 0.6; }
-article li.todo { color: var(--accent); }
-article blockquote {
-  border-left: 3px solid var(--accent);
-  padding-left: 1rem;
-  color: var(--muted);
-  margin: 1.5rem 0;
-  font-style: italic;
-}
-article a { color: var(--accent); }
-article code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-article pre {
-  background: var(--fg);
-  color: var(--bg);
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-.tags {
-  margin-top: 0.5rem;
-}
-.tags code {
-  background: var(--bg);
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-right: 4px;
-}
-footer {
-  background: var(--fg);
-  padding: 2.5rem 2rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--bg);
-}
-footer a { color: var(--accent); }
-@media(max-width: 600px) {
-  header.hero h1 { font-size: 2.2rem; }
-  nav .links a { margin-left: 1rem; font-size: 0.85rem; }
-  section { padding: 2.5rem 1.5rem; }
-}
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <nav>
@@ -223,9 +22,9 @@ footer a { color: var(--accent); }
   <h1>博客上线：我的 AI 顾问系统</h1>
   <p class="tagline">2026-06-19</p>
 </header>
-<section>
+<section class="reading">
   <article>
-    <div class="tags"><code>[博客</code> <code>AI</code> <code>系统搭建]</code></div>
+    <div class="tags"><code>博客</code> <code>AI</code> <code>系统搭建</code></div>
     <br/>
 <h2>今日完成</h2>
 <br/>
@@ -245,7 +44,7 @@ footer a { color: var(--accent); }
 <li>`about.json` — 我是谁</li>
 <li>最近日志 — 我在做什么、什么没搞定</li>
 <li>GitHub README — 项目状态</li>
-</ul>
+</ol>
 <br/>
 <p>这样 AI 不是一次性工具，而是知道我上周在做什么、这周该推什么。</p>
 <br/>
@@ -256,7 +55,7 @@ footer a { color: var(--accent); }
 <li>**项目执行助理** — 想法拆成任务块，分给 AI 执行</li>
 <li>**学习加速器** — 文档扔给 AI，用我已有的基础讲解</li>
 <li>**长期顾问** — 读日志，提醒我什么还没搞定</li>
-</ul>
+</ol>
 <br/>
 <h2>状态</h2>
 <br/>
