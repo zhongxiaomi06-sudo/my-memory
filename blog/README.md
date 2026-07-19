@@ -1,23 +1,49 @@
 # Ashley 的成长日志
 
 > 不依赖 VitePress，纯粹的静态 HTML 博客
-> 构建命令: `node build.js`
 > 主题：淡蓝色、简洁、阅读模式优先
+
+## 部署架构
+
+- **源码与内容**：`my-memory/blog/`（本目录）
+- **部署仓库**：`zhongxiaomi06-sudo/ashley-blog`
+- **线上域名**：`https://200141.xin`
+- **构建产物**：`dist/` 不再提交到 `my-memory`，仅作为本地构建临时目录
 
 ## 目录结构
 
 ```
 ├── build.js          # 构建脚本（Markdown → HTML）
+├── deploy.sh         # 一键部署到 ashley-blog
 ├── src/posts/        # 日志源文件（Markdown）
 ├── public/           # 静态文件（about.json、style.css）
 ├── legacy/           # 旧 VitePress / 独立页面（不再构建）
-├── dist/             # 构建产物（直接托管 GitHub Pages）
+├── dist/             # 构建产物（本地临时，不提交）
 └── new-post.sh       # 快速新建日志模板
 ```
 
-## AI 如何读取
+## 本地构建
 
-AI 浏览器访问 `https://200141.xin/about.json` 获取结构化状态，或直接读 GitHub 仓库源文件。
+```bash
+cd my-memory/blog
+node build.js
+```
+
+构建结果在 `dist/`，可直接用浏览器打开查看。
+
+## 部署到线上
+
+```bash
+cd my-memory/blog
+bash deploy.sh
+```
+
+脚本会：
+1. 运行 `node build.js`
+2. 拉取 `ashley-blog` 仓库到临时目录
+3. 用 `dist/` 覆盖旧文件
+4. 提交并推送到 `ashley-blog/main`
+5. GitHub Pages 自动重新部署 `200141.xin`
 
 ## 添加新日志
 
@@ -28,7 +54,10 @@ echo "..." > src/posts/YYYY-MM-DD-title.md
 # 方法2: 用模板
 bash new-post.sh "标题"
 
-# 重新构建 + 推送
-node build.js
-cd dist && git add . && git commit -m "new post" && git push
+# 构建 + 部署
+bash deploy.sh
 ```
+
+## AI 如何读取
+
+AI 浏览器访问 `https://200141.xin/about.json` 获取结构化状态，或直接读 `my-memory/blog/public/about.json`。

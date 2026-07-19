@@ -27,3 +27,6 @@ __pycache__/
 
 # 忽略 shell 重定向意外生成的空文件
 amp
+
+# 忽略博客构建产物（部署目标为 ashley-blog 仓库）
+blog/dist/
