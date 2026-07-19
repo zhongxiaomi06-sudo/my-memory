@@ -10,6 +10,10 @@ fs.mkdirSync(postsDir, { recursive: true });
 
 const postFiles = fs.readdirSync(postsDir).filter(f => f.endsWith('.md')).sort().reverse();
 
+// 安全取值
+const safe = (v, fallback = '') => v !== undefined && v !== null ? v : fallback;
+const safeArr = (v) => Array.isArray(v) ? v : [];
+
 // 简单的 Markdown 解析
 function parseMD(text) {
   const lines = text.split('\n');
@@ -125,6 +129,12 @@ function normalizeTags(raw) {
   return raw.split(',').map(t => t.trim()).filter(Boolean);
 }
 
+// 页脚社交平台链接
+const footerSocial = safeArr(about.social)
+  .filter(s => s.status === 'active')
+  .map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`)
+  .join(' · ');
+
 // 通用模板
 const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -132,12 +142,13 @@ const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title} — ${about.name}</title>
+<meta name="description" content="${safe(about.tagline, about.goal)}">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <nav>
   <div class="nav-inner">
-    <a class="brand" href="/">${about.name}</a>
+    <a class="brand" href="/">${about.name}<span> / ${about.english_name}</span></a>
     <div class="links">
       <a href="/" class="${activeNav === 'home' ? 'active' : ''}">首页</a>
       <a href="/posts.html" class="${activeNav === 'posts' ? 'active' : ''}">日志</a>
@@ -147,14 +158,16 @@ const layout = (title, content, activeNav = '') => `<!DOCTYPE html>
 </nav>
 ${content}
 <footer>
-  <p>${about.name} · ${about.role} · 更新于 ${about.last_updated}</p>
-  <p>GitHub: <a href="https://github.com/${about.github}">@${about.github}</a> · Email: <a href="mailto:${about.email}">${about.email}</a></p>
+  <div class="footer-inner">
+    <p>${about.name} · ${about.role} · 更新于 ${about.last_updated}</p>
+    <p>${footerSocial ? footerSocial + ' · ' : ''}<a href="mailto:${about.email}">${about.email}</a></p>
+  </div>
 </footer>
 </body>
 </html>`;
 
 // 所有技能扁平化
-const allSkills = Object.values(about.skills).flat();
+const allSkills = Object.values(about.skills || {}).flat();
 
 // 最近日志
 let postsHTML = '';
@@ -174,58 +187,147 @@ for (const p of parsedPosts.slice(0, 3)) {
     </div>`;
 }
 
+// 统计数据
+const statsHTML = safeArr(about.stats).map(s => `
+  <div class="stat-card">
+    <div class="number">${s.number}</div>
+    <div class="label">${s.label}</div>
+    <div class="desc">${safe(s.description)}</div>
+  </div>`).join('');
+
+// 项目卡片
+const projectsHTML = safeArr(about.projects).map(p => `
+  <div class="project-card">
+    <div class="status">${p.status}</div>
+    <h4>${p.name}</h4>
+    <p>${safe(p.tech || p.type || p.description)}</p>
+    <div class="meta">${p.role}</div>
+  </div>`).join('');
+
+// 创作作品卡片
+const creativeHTML = safeArr(about.creative_works).map(c => `
+  <div class="creative-card">
+    <div class="status">${c.status}</div>
+    <h4>${c.name}</h4>
+    <p>${safe(c.description)}</p>
+    <div class="meta">${c.role}</div>
+  </div>`).join('');
+
+// 技能标签云
+const skillsHTML = allSkills.map(s => `<span class="tag">${s}</span>`).join('');
+
+// 社交链接
+const socialHTML = safeArr(about.social).map(s => `
+  <a class="social-link" href="${s.url}" ${s.status === 'active' ? 'target="_blank" rel="noopener"' : ''}>
+    <span class="platform">${s.name}</span>
+    <span class="handle">${s.label}</span>
+  </a>`).join('');
+
+// 当前状态栏
+const now = about.now || {};
+const nowHTML = now.status ? `
+  <div class="now-bar">
+    <span class="label">Now</span>
+    <span class="value">${safe(now.status)} · ${safe(now.location)} · ${safe(now.focus)}</span>
+  </div>
+` : '';
+
+// 视频占位区
+const video = about.video_section || {};
+const videoHTML = `
+  <div class="video-placeholder">
+    <svg class="play-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="31" stroke="currentColor" stroke-width="2"/>
+      <path d="M26 20L44 32L26 44V20Z" fill="currentColor"/>
+    </svg>
+    <h4>${safe(video.placeholder || '视频即将到来')}</h4>
+    <p>${safe(video.description, '这里会陆续放入项目演示、Build in Public 短视频与创作片段。')}</p>
+  </div>
+`;
+
 // 生成首页
 const indexContent = `
 <header class="hero">
-  <h1>${about.name}</h1>
-  <p class="tagline">${about.role} · ${about.location}</p>
+  <div class="hero-eyebrow">${about.name} / ${about.english_name}</div>
+  <h1>${safe(about.tagline, `${about.role} · ${about.location}`)}</h1>
+  <p class="lead">${about.goal}。这个站点是我的个人主页、项目展厅与 Build in Public 日志中心。</p>
+  ${nowHTML}
+  <a class="button" href="/about.html">了解更多</a>
+  <a class="button secondary" href="mailto:${about.email}">联系我</a>
 </header>
 
-<section class="about">
-  <h2 class="section-title">关于</h2>
-  <p>${about.goal}。目前专注于 ${about.current_focus.slice(0, 3).join('、')}。</p>
-  <p>这个站点是我的个人主页与日志中心，记录项目、想法与成长。</p>
-</section>
-
-<section class="focus">
-  <h2 class="section-title">当前专注</h2>
-  <ul>
-    ${about.current_focus.map(f => `<li>${f}</li>`).join('\n    ')}
-  </ul>
-</section>
-
-<section class="skills">
-  <h2 class="section-title">技能</h2>
-  <ul>
-    ${allSkills.map(s => `<li>${s}</li>`).join('\n    ')}
-  </ul>
-</section>
-
-<section class="portfolio">
-  <h2 class="section-title">项目</h2>
-  <div class="portfolio-grid">
-    ${about.projects.map(p => `
-    <div class="project-card">
-      <h4>${p.name}</h4>
-      <p>${p.tech || p.type || ''}</p>
-      <div class="meta">${p.role} · ${p.status}</div>
-    </div>`).join('')}
+<section class="stats-section">
+  <div class="section-header">
+    <span class="section-title">数据</span>
+  </div>
+  <div class="stats-grid">
+    ${statsHTML}
   </div>
 </section>
 
-<section>
-  <h2 class="section-title">最近日志</h2>
+<section class="projects-section">
+  <div class="section-header">
+    <span class="section-title">项目</span>
+    <a class="section-more" href="/about.html#projects">全部项目 →</a>
+  </div>
+  <div class="portfolio-grid">
+    ${projectsHTML}
+  </div>
+</section>
+
+<section class="creative-section">
+  <div class="section-header">
+    <span class="section-title">创作</span>
+  </div>
+  <p class="section-desc">代码之外的叙事、游戏与角色。</p>
+  <div class="portfolio-grid">
+    ${creativeHTML}
+  </div>
+</section>
+
+<section class="logs-section">
+  <div class="section-header">
+    <span class="section-title">最近日志</span>
+    <a class="section-more" href="/posts.html">查看全部 →</a>
+  </div>
   <div class="portfolio-grid">
     ${postsHTML}
   </div>
-  <p style="margin-top:2rem"><a class="button" href="/posts.html">查看所有日志</a></p>
 </section>
 
-<section class="contact">
-  <h2 class="section-title">联系</h2>
-  <p>欢迎通过邮件或 GitHub 联系我，讨论项目、技术或合作。</p>
+<section class="skills-section">
+  <div class="section-header">
+    <span class="section-title">技能与工具</span>
+  </div>
+  <div class="skill-cloud">
+    ${skillsHTML}
+  </div>
+</section>
+
+<section class="video-section">
+  <div class="section-header">
+    <span class="section-title">${safe(video.title, '视频')}</span>
+  </div>
+  ${videoHTML}
+</section>
+
+<section class="social-section">
+  <div class="section-header">
+    <span class="section-title">社交平台</span>
+  </div>
+  <p class="section-desc">后续会在这里接入小红书、即刻、公众号、知乎、B站等账号。</p>
+  <div class="social-grid">
+    ${socialHTML}
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="section-header">
+    <span class="section-title">联系</span>
+  </div>
+  <p class="section-desc">欢迎通过邮件或 GitHub 联系我，讨论项目、技术或合作。</p>
   <a class="button" href="mailto:${about.email}">发送邮件</a>
-  <a class="button" href="https://github.com/${about.github}" style="margin-left:0.75rem">GitHub</a>
+  <a class="button secondary" href="https://github.com/${about.github}">GitHub</a>
 </section>
 `;
 
@@ -245,8 +347,9 @@ const postsListHTML = parsedPosts.map(p => {
 
 const postsListContent = `
 <header class="hero">
+  <div class="hero-eyebrow">Build in Public</div>
   <h1>所有日志</h1>
-  <p class="tagline">记录项目、想法与成长</p>
+  <p class="lead">记录项目迭代、技术踩坑、创作过程与成长思考。</p>
 </header>
 <section>
   <div class="portfolio-grid">
@@ -270,8 +373,8 @@ for (const p of parsedPosts) {
   const tags = normalizeTags(p.frontmatter.tags);
   const postContent = `
 <header class="hero">
+  <div class="hero-eyebrow">${date}</div>
   <h1>${p.frontmatter.title || '日志'}</h1>
-  <p class="tagline">${date}</p>
 </header>
 <section class="reading">
   <article>
@@ -287,39 +390,57 @@ for (const p of parsedPosts) {
 // 生成关于页面
 const aboutContent = `
 <header class="hero">
-  <h1>关于我</h1>
-  <p class="tagline">${about.role} · ${about.location}</p>
+  <div class="hero-eyebrow">关于</div>
+  <h1>${about.name}（${about.english_name}）</h1>
+  <p class="lead">${about.role} · ${about.location}</p>
 </header>
 <section class="reading">
   <article>
-    <h2>${about.name}（${about.english_name}）</h2>
     <p>${about.goal}</p>
 
-    <h2>当前专注</h2>
+    <h2 id="now">当前状态</h2>
+    ${nowHTML || `<p>${about.current_focus.slice(0, 3).join('、')}。</p>`}
+
+    <h2 id="focus">当前专注</h2>
     <ul>
       ${about.current_focus.map(f => `<li>${f}</li>`).join('\n      ')}
     </ul>
 
-    <h2>技能</h2>
-    ${Object.entries(about.skills).map(([k, v]) => `<p><strong>${k}</strong>：${v.join('、')}</p>`).join('\n    ')}
+    <h2 id="skills">技能</h2>
+    ${Object.entries(about.skills || {}).map(([k, v]) => {
+      const labels = { languages: '语言', frameworks: '框架', ai: 'AI / LLM', cloud: '云服务 / 工具' };
+      return `<p><strong>${labels[k] || k}</strong>：${v.join('、')}</p>`;
+    }).join('\n    ')}
 
-    <h2>项目</h2>
+    <h2 id="projects">项目</h2>
     <div class="portfolio-grid">
       ${about.projects.map(p => `
       <div class="project-card">
+        <div class="status">${p.status}</div>
         <h4>${p.name}</h4>
-        <p>${p.tech || p.type || ''}</p>
-        <div class="meta">${p.role} · ${p.status}</div>
+        <p>${safe(p.tech || p.type || '')}</p>
+        <div class="meta">${p.role}</div>
       </div>`).join('')}
     </div>
 
-    <h2>联系</h2>
+    <h2 id="creative">创作</h2>
+    <div class="portfolio-grid">
+      ${safeArr(about.creative_works).map(c => `
+      <div class="creative-card">
+        <div class="status">${c.status}</div>
+        <h4>${c.name}</h4>
+        <p>${safe(c.description)}</p>
+        <div class="meta">${c.role}</div>
+      </div>`).join('')}
+    </div>
+
+    <h2 id="contact">联系</h2>
     <ul>
       <li>GitHub：<a href="https://github.com/${about.github}">@${about.github}</a></li>
       <li>邮箱：<a href="mailto:${about.email}">${about.email}</a></li>
     </ul>
 
-    <h2>AI 可读数据</h2>
+    <h2 id="data">AI 可读数据</h2>
     <p>AI 可以通过 <a href="/about.json">about.json</a> 获取结构化状态。</p>
   </article>
 </section>

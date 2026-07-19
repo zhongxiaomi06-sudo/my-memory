@@ -2,8 +2,14 @@
   "name": "钟笑咪",
   "english_name": "Ashley",
   "alias": "Mia",
+  "tagline": "00 后大学生 builder，用 AI 多智能体工作流把想法推到可访问部署。",
   "role": "大一学生 / AI 产品开发者",
   "location": "北京",
+  "now": {
+    "status": "暑假实习准备中",
+    "location": "北京",
+    "focus": "TTC 猎头系统合作 · 妙喵私教迭代 · 美加墨世界杯资产生产"
+  },
   "github": "zhongxiaomi06-sudo",
   "email": "zhongxiaomi06@gmail.com",
   "current_focus": [
@@ -19,6 +25,12 @@
     "ai": ["DeepSeek", "Agent 管道", "RAG", "向量检索", "提示词工程"],
     "cloud": ["阿里云 Tablestore", "GitHub Pages", "飞书 API"]
   },
+  "stats": [
+    { "number": "1", "label": "生产级系统", "description": "TalentMatch 54+ API，HTTPS 上线" },
+    { "number": "3", "label": "已部署项目", "description": "猎头系统、献书游戏、AI 记忆中枢" },
+    { "number": "1", "label": "创意 IP", "description": "宋知秋：五幕剧本 + 动画分镜" },
+    { "number": "6", "label": "日志", "description": "记录项目、想法与成长" }
+  ],
   "projects": [
     {
       "name": "AI 记忆中枢",
@@ -51,6 +63,39 @@
       "tech": "Node.js 静态构建 + GitHub Pages"
     }
   ],
-  "last_updated": "2026-07-19",
+  "creative_works": [
+    {
+      "name": "宋知秋",
+      "role": "作者 / 世界观设计",
+      "status": "剧本完成",
+      "description": "五幕剧本、双主角完整设定、动画分镜与生命档案。"
+    },
+    {
+      "name": "献书游戏",
+      "role": "创作者 / 开发者",
+      "status": "已部署",
+      "description": "东晋叙事卡牌游戏，9 轮 12 卡 3×3 结局矩阵。"
+    },
+    {
+      "name": "妙喵私教",
+      "role": "开发者 / 产品",
+      "status": "迭代中",
+      "description": "语音输入 + 宠物 TTS + Lottie 动画 + 互动彩蛋。"
+    }
+  ],
+  "video_section": {
+    "title": "视频",
+    "description": "这里会陆续放入项目演示、Build in Public 短视频与创作片段。",
+    "placeholder": "首个视频即将到来"
+  },
+  "social": [
+    { "name": "GitHub", "label": "@zhongxiaomi06-sudo", "url": "https://github.com/zhongxiaomi06-sudo", "status": "active" },
+    { "name": "小红书", "label": "待开通", "url": "#", "status": "planned" },
+    { "name": "即刻", "label": "待开通", "url": "#", "status": "planned" },
+    { "name": "公众号", "label": "待开通", "url": "#", "status": "planned" },
+    { "name": "知乎", "label": "待开通", "url": "#", "status": "planned" },
+    { "name": "B站", "label": "待开通", "url": "#", "status": "planned" }
+  ],
+  "last_updated": "2026-07-20",
   "goal": "持续成长，用 AI 放大能力，做一个能管团队的 builder"
 }

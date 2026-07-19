@@ -1,7 +1,7 @@
 # Ashley 的成长日志
 
 > 不依赖 VitePress，纯粹的静态 HTML 博客
-> 主题：淡蓝色、简洁、阅读模式优先
+> 主题：暖色调、设计师风格、内容优先、响应式
 
 ## 部署架构
 
@@ -9,6 +9,13 @@
 - **部署仓库**：`zhongxiaomi06-sudo/ashley-blog`
 - **线上域名**：`https://200141.xin`
 - **构建产物**：`dist/` 不再提交到 `my-memory`，仅作为本地构建临时目录
+
+## 页面结构
+
+- **首页**：个人简介、数据、项目、创作、最近日志、技能、视频占位、社交平台入口
+- **日志列表**：所有 Build in Public 日志
+- **关于**：更完整的个人状态、技能、项目、创作与联系方式
+- **about.json**：AI 可读的结构化状态
 
 ## 目录结构
 
@@ -61,3 +68,7 @@ bash deploy.sh
 ## AI 如何读取
 
 AI 浏览器访问 `https://200141.xin/about.json` 获取结构化状态，或直接读 `my-memory/blog/public/about.json`。
+
+## 主题定制
+
+样式在 `public/style.css`，基于 CSS 自定义属性。修改后重新构建部署即可。
