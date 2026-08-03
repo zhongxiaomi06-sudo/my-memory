@@ -23,3 +23,6 @@ memories/codex-skills/cloud-memory/scripts/upload-memory.py filter=git-crypt dif
 *.crt filter=git-crypt diff=git-crypt
 *.pem filter=git-crypt diff=git-crypt
 *.p12 filter=git-crypt diff=git-crypt
+
+# 家庭 VPN 账号（含 UUID 和服务器 IP）
+系统配置/vpn/** filter=git-crypt diff=git-crypt
